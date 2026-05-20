@@ -284,32 +284,63 @@ Todos los datos marcados como `[confirmado en producción]` salvo indicación.
 
 ### HOLDED
 
+> ⚠️ **Holded lanzó API v2 en mayo 2026 — auth incompatible con v1.**
+> **Regla:** proyecto nuevo → usar v2 obligatoriamente.
+> Proyecto existente → verificar qué versión usa ANTES de tocar nada.
+> Ver vault: `dev-log/knowledge-base/errors/holded-auth-change-bearer.md`
+
 ```json
 {
   "platform": "Holded",
-  "versions_validated": ["invoicing/v1"],
+  "versions_validated": ["invoicing/v1", "v2"],
+  "active_version": "v2",
+  "version_rule": "proyecto nuevo → v2 obligatorio | proyecto existente → verificar antes de tocar",
   "confidence": "high",
-  "auth": {
-    "method": "API Key en header",
+
+  "auth_v1": {
+    "status": "DEPRECATED — solo para proyectos existentes que ya la usan",
+    "method": "API Key en header literal",
     "header_name": "key",
-    "header_name_note": "literal minúscula 'key', no 'Authorization', no 'X-API-Key'",
-    "source": "[confirmado en producción]"
+    "header_value": "{HOLDED_API_KEY}",
+    "header_note": "literal minúscula 'key' — NO Authorization, NO X-API-Key",
+    "base_url": "https://api.holded.com/api/invoicing/v1",
+    "fallo_opaco": "Si el header está mal, Holded no devuelve 401 — falla de forma opaca",
+    "source": "[confirmado en producción — prestashop-holded-middleware-prod 2026-05-15]"
   },
-  "base_url": "https://api.holded.com/api/invoicing/v1",
+
+  "auth_v2": {
+    "status": "ACTIVA — usar en proyectos nuevos desde mayo 2026",
+    "method": "Bearer token estándar HTTP",
+    "header_name": "Authorization",
+    "header_value": "Bearer sk_live_{HOLDED_API_KEY}",
+    "api_key_prefix": "sk_live_",
+    "api_key_obtener": "Panel Holded → Ajustes → API → Generar nueva clave",
+    "base_url": "https://api.holded.com/api/v2/",
+    "scoped_permissions": true,
+    "scopes_ejemplo": ["sales:invoices.read", "sales:invoices.write"],
+    "error_auth": "HTTP 403 explícito si permisos insuficientes",
+    "source": "[oficial — docs holded.com/es/desarrolladores verificadas 2026-05-20]"
+  },
+
+  "typescript_auth": {
+    "v1": "headers: { 'key': process.env.HOLDED_API_KEY! }",
+    "v2": "headers: { 'Authorization': `Bearer ${process.env.HOLDED_API_KEY!}` }"
+  },
+
   "success_detection": {
     "fact": "response.data.status === 1 con campo id presente",
-    "warning": "HTTP 200 no garantiza éxito — verificar status en el body",
-    "source": "[confirmado en producción]"
+    "warning": "HTTP 200 no garantiza éxito — verificar status en el body. Aplica en v1. Verificar si v2 mantiene este comportamiento.",
+    "source": "[confirmado en producción v1] [inferido v2 — confirmar]"
   },
   "date_format": {
     "format": "Unix timestamp (segundos)",
     "warning": "NO acepta ISO 8601 — convertir siempre antes de enviar",
-    "source": "[confirmado en producción]"
+    "source": "[confirmado en producción v1]"
   },
   "id_format": {
     "format": "string alfanumérico de 24 caracteres",
     "warning": "NO son UUIDs estándar",
-    "source": "[confirmado en producción]"
+    "source": "[confirmado en producción v1]"
   },
   "pagination": {
     "type": "page",
@@ -317,88 +348,70 @@ Todos los datos marcados como `[confirmado en producción]` salvo indicación.
     "starts_at": 1,
     "page_size": 100,
     "warning": "Empieza en page=1, no page=0",
-    "source": "[confirmado en producción]"
+    "source": "[confirmado en producción v1]"
   },
   "rate_limits": {
     "requests_per_minute": 60,
     "on_429": "no documentado explícitamente — aplicar estrategia defensiva",
     "risk": "Con múltiples Lambdas concurrentes puede saturarse",
-    "source": "[confirmado en producción]"
+    "source": "[confirmado en producción v1]"
   },
-  "endpoints_validated": [
-    {
-      "name": "buscar contactos (paginado)",
-      "method": "GET",
-      "path": "/contacts?page={n}",
-      "note": "Búsqueda por campo 'code' — que contiene el ID del cliente en plataforma origen"
-    },
-    {
-      "name": "crear contacto",
-      "method": "POST",
-      "path": "/contacts",
-      "required_field": "type — 'client' o 'supplier'"
-    },
-    {
-      "name": "plan de cuentas contables",
-      "method": "GET",
-      "path": "/chartaccounts"
-    },
-    {
-      "name": "catálogo de productos",
-      "method": "GET",
-      "path": "/products"
-    },
-    {
-      "name": "crear producto",
-      "method": "POST",
-      "path": "/products"
-    },
-    {
-      "name": "crear factura",
-      "method": "POST",
-      "path": "/documents/invoice"
-    },
-    {
-      "name": "crear abono",
-      "method": "POST",
-      "path": "/documents/creditnote"
-    },
-    {
-      "name": "registrar cobro",
-      "method": "POST",
-      "path": "/documents/{id}/paymentcreate"
-    }
+
+  "endpoints_v1_validated": [
+    { "name": "buscar contactos (paginado)", "method": "GET",  "path": "/contacts?page={n}",              "note": "Búsqueda por campo 'code'" },
+    { "name": "crear contacto",             "method": "POST", "path": "/contacts",                        "required_field": "type: 'client' | 'supplier'" },
+    { "name": "plan de cuentas contables",  "method": "GET",  "path": "/chartaccounts" },
+    { "name": "catálogo de productos",      "method": "GET",  "path": "/products" },
+    { "name": "crear producto",             "method": "POST", "path": "/products" },
+    { "name": "crear factura",              "method": "POST", "path": "/documents/invoice" },
+    { "name": "crear abono",               "method": "POST", "path": "/documents/creditnote" },
+    { "name": "registrar cobro",           "method": "POST", "path": "/documents/{id}/paymentcreate" }
   ],
+
+  "endpoints_v2_pending_validation": {
+    "warning": "Estructura v2 en investigación — NO usar sin validar primero con el cliente",
+    "known": [
+      { "name": "crear factura (v2)", "method": "POST", "path": "/invoices", "source": "[oficial — sin validar en producción]" }
+    ],
+    "action": "Research debe documentar equivalencias completas v1→v2 antes de cualquier proyecto nuevo con Holded"
+  },
+
   "gotchas": [
     {
+      "issue": "API v2 lanzada mayo 2026 — auth completamente incompatible con v1",
+      "impact": "Proyectos v1 existentes funcionan pero están en riesgo. Proyectos nuevos DEBEN usar v2.",
+      "migracion": "Cambiar header 'key' → 'Authorization: Bearer sk_live_...' y URL base",
+      "source": "[oficial — detectado 2026-05-20]"
+    },
+    {
       "issue": "accountingAccountId requiere ID interno de 24 chars, no el número visible",
-      "example": "El número contable '700' visible en pantalla NO funciona. Se necesita el ID interno.",
-      "impact": "Si se envía el número visible, Holded lo ignora silenciosamente y asigna cuenta por defecto",
-      "source": "[confirmado en producción]"
+      "example": "El número '700' visible en pantalla NO funciona. Se necesita el ID interno de chartaccounts.",
+      "impact": "Holded lo ignora silenciosamente y asigna cuenta por defecto — sin error, factura en cuenta equivocada",
+      "source": "[confirmado en producción v1]"
     },
     {
       "issue": "Búsqueda de contactos paginada — hasta ~10 páginas de 100 contactos",
-      "impact": "Clientes con más de 1.000 contactos en Holded pueden no encontrarse si se corta la paginación",
-      "source": "[confirmado en producción]"
+      "impact": "Clientes con más de 1.000 contactos pueden no encontrarse si se corta la paginación",
+      "source": "[confirmado en producción v1]"
     },
     {
       "issue": "Contacto fallido al crear → no bloquea la factura",
-      "fact": "Si el contacto no existe, se puede crear en el momento. La factura no debe fallar por esto.",
-      "source": "[confirmado en producción]"
+      "fact": "Si no existe, crear en el momento. La factura no debe fallar por esto.",
+      "source": "[confirmado en producción v1]"
     },
     {
       "issue": "Cobro fallido → no revierte la factura ya creada",
-      "fact": "La factura existe aunque el cobro falle. Son operaciones independientes.",
-      "source": "[confirmado en producción]"
+      "fact": "Factura y cobro son operaciones independientes.",
+      "source": "[confirmado en producción v1]"
     },
     {
       "issue": "productId en líneas de factura vincula al catálogo de Holded",
-      "fact": "El producto debe existir en el catálogo antes de referenciar su ID en una factura",
-      "source": "[confirmado en producción]"
+      "fact": "El producto debe existir en el catálogo antes de referenciar su ID",
+      "source": "[confirmado en producción v1]"
     },
     {
-      "issue": "Algunos endpoints requieren companyId en ciertos planes de Holded",
-      "impact": "En planes Enterprise con múltiples empresas, las llamadas sin companyId afectan a la empresa por defecto",
+      "issue": "Algunos planes requieren companyId",
+      "impact": "En planes Enterprise multi-empresa, sin companyId afecta a la empresa por defecto",
       "source": "[inferido — confirmar con cliente si tiene plan multi-empresa]"
     }
   ]
