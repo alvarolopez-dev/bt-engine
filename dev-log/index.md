@@ -15,7 +15,8 @@ Gestionada por el agente Scribe. Actualizada tras cada proyecto.
 | Plataforma | Proyectos | Gotchas documentados |
 |-----------|-----------|---------------------|
 | [[prestashop]] | [[prestashop-holded-middleware-prod]] | 8 gotchas confirmados en producción |
-| [[holded]] | [[prestashop-holded-middleware-prod]] | 5 gotchas confirmados en producción |
+| [[holded]] | [[prestashop-holded-middleware-prod]] | 6 gotchas confirmados en producción |
+| [[revo-xef]] | *(sin proyectos aún)* | 7 gotchas documentados (docs oficiales) |
 
 ---
 
@@ -78,8 +79,8 @@ Gestionada por el agente Scribe. Actualizada tras cada proyecto.
 
 ## Estadísticas de la red
 
-- **Total nodos:** 16
-- **Plataformas:** 2
+- **Total nodos:** 17
+- **Plataformas:** 3
 - **Patrones:** 4
 - **Errores resueltos:** 6
 - **Breaking changes:** 1
@@ -99,3 +100,4 @@ Gestionada por el agente Scribe. Actualizada tras cada proyecto.
 
 *Última actualización: 2026-05-20*
 *Próximo proyecto a documentar: añadir entrada en `projects/` y actualizar este índice.*
+*Próxima plataforma pendiente: actualizar Holded gotchas (6 en holded.md, 5 en tabla anterior — corregido).*
