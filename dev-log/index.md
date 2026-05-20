@@ -17,6 +17,14 @@ Gestionada por el agente Scribe. Actualizada tras cada proyecto.
 | [[prestashop]] | [[prestashop-holded-middleware-prod]] | 8 gotchas confirmados en producción |
 | [[holded]] | [[prestashop-holded-middleware-prod]] | 6 gotchas confirmados en producción |
 | [[revo-xef]] | *(sin proyectos aún)* | 7 gotchas documentados (docs oficiales) |
+| [[revo-retail]] | *(sin proyectos aún)* | 7 gotchas — `username` header (≠ tenant), 200 no 201, batch all-or-nothing |
+| [[revo-flow]] | *(sin proyectos aún)* | 3 gotchas — sin webhooks, `ok===true` check, booking.status numérico sin documentar |
+| [[revo-solo]] | *(sin proyectos aún)* | 6 gotchas — sin webhooks, `account` header, tax en basis points |
+| [[stripe]] | *(sin proyectos aún)* | 5 gotchas — amounts en cents, raw body para firma HMAC, anti-replay 300s |
+| [[woocommerce]] | *(sin proyectos aún)* | 5 gotchas — permalinks WordPress prerequisito, timezone por sitio |
+| [[shopify]] | *(sin proyectos aún)* | 6 gotchas — version pinning trimestral, webhook secret por endpoint |
+| [[zoho-crm]] | *(sin proyectos aún)* | 5 gotchas — notifications expiran 72h, data center `.eu` para España |
+| [[business-central]] | *(sin proyectos aún)* | 6 gotchas — ETag/If-Match obligatorio, suscripciones expiran 3 días |
 
 ---
 
@@ -79,8 +87,8 @@ Gestionada por el agente Scribe. Actualizada tras cada proyecto.
 
 ## Estadísticas de la red
 
-- **Total nodos:** 17
-- **Plataformas:** 3
+- **Total nodos:** 25
+- **Plataformas:** 11
 - **Patrones:** 4
 - **Errores resueltos:** 6
 - **Breaking changes:** 1
@@ -100,4 +108,3 @@ Gestionada por el agente Scribe. Actualizada tras cada proyecto.
 
 *Última actualización: 2026-05-20*
 *Próximo proyecto a documentar: añadir entrada en `projects/` y actualizar este índice.*
-*Próxima plataforma pendiente: actualizar Holded gotchas (6 en holded.md, 5 en tabla anterior — corregido).*
