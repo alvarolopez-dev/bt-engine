@@ -1,0 +1,208 @@
+{
+  "main": {
+    "id": "22c96c4f9e50c822",
+    "type": "split",
+    "children": [
+      {
+        "id": "c8d04837f6f10732",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "d0c24e7b32c007e2",
+            "type": "leaf",
+            "state": {
+              "type": "canvas",
+              "state": {
+                "file": "Sin título.canvas",
+                "viewState": {
+                  "x": 0,
+                  "y": 0,
+                  "zoom": 0
+                }
+              },
+              "icon": "lucide-layout-dashboard",
+              "title": "Sin título"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "222f577c0d601c93",
+    "type": "split",
+    "children": [
+      {
+        "id": "d78f639d9fda8025",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "7e4faa28c74cac88",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Explorador de archivos"
+            }
+          },
+          {
+            "id": "a1a42d91d677bab7",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Buscar"
+            }
+          },
+          {
+            "id": "34e86d1499c69238",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Marcadores"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "d18bf0f4f0a0b46f",
+    "type": "split",
+    "children": [
+      {
+        "id": "91a9db83d47cf4d5",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "fd5307519eb91b52",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "Sin título.canvas",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Enlaces entrantes de Sin título"
+            }
+          },
+          {
+            "id": "57688f38681d2b1a",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "Sin título.canvas",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Enlaces salientes de Sin título"
+            }
+          },
+          {
+            "id": "8fd49b17ed5684f7",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Etiquetas"
+            }
+          },
+          {
+            "id": "5a65a70c82ae8500",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "Todas las propiedades"
+            }
+          },
+          {
+            "id": "6bd05ca58b9baacc",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "Sin título.canvas",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Esquema de Sin título"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Abrir selector rápido": false,
+      "graph:Abrir vista gráfica": false,
+      "canvas:Crear nuevo lienzo": false,
+      "daily-notes:Abrir la nota de hoy": false,
+      "templates:Insertar plantilla": false,
+      "command-palette:Abrir paleta de comandos": false,
+      "bases:Crear nueva base": false
+    }
+  },
+  "active": "d0c24e7b32c007e2",
+  "lastOpenFiles": [
+    "index.md",
+    "projects/prestashop-holded-middleware-prod.md",
+    "knowledge-base/platforms/holded.md",
+    "knowledge-base/platforms/prestashop.md",
+    "knowledge-base/patterns/patron-3-tiers.md",
+    "knowledge-base/patterns/handler-structure.md",
+    "knowledge-base/patterns/idempotencia-dynamodb.md",
+    "knowledge-base/errors/e6-panel-router-sin-url.md",
+    "knowledge-base/errors/e5-campo-estado-renombrado.md",
+    "knowledge-base/errors/e4-caracteres-invisibles.md",
+    "knowledge-base/errors/e3-order-rows-tres-formatos.md",
+    "knowledge-base/errors/e2-race-condition-facturas-duplicadas.md",
+    "knowledge-base/errors/e1-object-object-nombres.md",
+    "Sin título.canvas",
+    "knowledge-base/patterns/degradacion-silenciosa.md",
+    "knowledge-base/costs/prestashop-holded-prod.md"
+  ]
+}
