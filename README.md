@@ -79,8 +79,9 @@ bigtoone-agents/
 
 | MCP | Propósito |
 |-----|-----------|
-| `fetch` | Permite a Claude Code hacer peticiones HTTP (Research investiga APIs) |
 | `filesystem` | Acceso a `dev-log/` para que el Scribe escriba en la vault |
+
+> `@modelcontextprotocol/server-fetch` no existe en npm. Claude Code incluye WebFetch nativo — no se necesita MCP externo para fetch.
 
 ---
 

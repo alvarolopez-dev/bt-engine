@@ -40,6 +40,7 @@ Gestionada por el agente Scribe. Actualizada tras cada proyecto.
 | [[e4-caracteres-invisibles]] | [[prestashop]] | Contactos no encontrados por nombre | `cleanStr()` |
 | [[e5-campo-estado-renombrado]] | DynamoDB | Pedidos re-procesados tras renombrar campo | Migración + compatibilidad |
 | [[e6-panel-router-sin-url]] | Serverless v3 | Lambda no condicional por limitación CF | Lambda siempre + URL condicional |
+| [[holded-auth-change-bearer]] | [[holded]] | API v2: `Authorization: Bearer` rompe proyectos v1 | Migrar header + URL base |
 
 ---
 
@@ -61,6 +62,14 @@ Gestionada por el agente Scribe. Actualizada tras cada proyecto.
 
 ---
 
+## ⚠️ Breaking changes detectados
+
+| Cambio | Plataforma | Detectado | Impacto |
+|--------|-----------|-----------|---------|
+| [[holded-auth-change-bearer]] | [[holded]] | 2026-05-20 | Alto — proyectos v1 en riesgo de deprecación |
+
+---
+
 ## Correcciones críticas documentadas
 
 > ⚠️ **ADR-3 en prestashop-holded-middleware-prod**: La configuración del panel usa `AuthType: NONE` (Lambda URL pública detrás de CloudFront). CLAUDE.md del proyecto documenta `AuthType: AWS_IAM` incorrectamente. CloudFront OAC+SigV4 fue descartado por un bug de AWS con POST/PUT. **El `serverless.yml` es siempre la fuente de verdad**, no CLAUDE.md ni la documentación narrativa.
@@ -69,10 +78,11 @@ Gestionada por el agente Scribe. Actualizada tras cada proyecto.
 
 ## Estadísticas de la red
 
-- **Total nodos:** 15
+- **Total nodos:** 16
 - **Plataformas:** 2
 - **Patrones:** 4
 - **Errores resueltos:** 6
+- **Breaking changes:** 1
 - **Históricos de coste:** 1
 - **Proyectos:** 1
 - **Índice:** 1

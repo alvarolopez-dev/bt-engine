@@ -1,6 +1,9 @@
 ---
-tags: [plataforma, holded, erp, contabilidad]
+tags: [plataforma, holded, erp, contabilidad, breaking-change]
 created: 2026-05-20
+auth_verified_date: 2026-05-20
+auth_source: "official docs (holded.com/es/desarrolladores) + proyecto real prestashop-holded-middleware-prod"
+auth_discrepancy: true
 project: prestashop-holded-middleware-prod
 fuente: PROJECT_DNA.md §5, PROJECT_DNA_COMPLEMENT.md ADR-3 ADR-5
 ---
@@ -11,14 +14,50 @@ fuente: PROJECT_DNA.md §5, PROJECT_DNA_COMPLEMENT.md ADR-3 ADR-5
 
 ERP y software de contabilidad. Recibe datos de [[prestashop]] en [[prestashop-holded-middleware-prod]].
 
+## ⚠️ BREAKING CHANGE — Holded API v2 (mayo 2026)
+
+> Ver nodo completo: [[holded-auth-change-bearer]]
+
+Holded lanzó API v2 en mayo 2026 con **autenticación incompatible** con v1.
+El proyecto de referencia (`prestashop-holded-middleware-prod`) usa v1 y **está en riesgo de deprecación**.
+v1 sigue operativa pero es deprecated. No hay fecha de shutdown publicada.
+
 ## Autenticación
 
-- Método: **API Key en header**
-- Header: `key: {HOLDED_API_KEY}` — literal minúscula `key`, no `Authorization`, no `X-API-Key`
-- URL base: `https://api.holded.com/api/invoicing/v1`
-- `[confirmado en producción]`
+### v1 — En producción actual `[confirmado en producción]`
 
-> ⚠️ El header se llama `key` (minúscula). Un error común es usar `Authorization: Bearer` o `X-API-Key`. Holded no responde con 401 si el header está mal — simplemente falla de forma opaca.
+- Header: `key: {HOLDED_API_KEY}` — literal minúscula `key`
+- URL base: `https://api.holded.com/api/invoicing/v1`
+- **Sin** `Authorization`, sin `Bearer`, sin `X-API-Key`
+- Fallo opaco si el header está mal (no devuelve 401 — simplemente falla)
+
+```typescript
+// v1 — proyecto actual
+headers: { 'key': process.env.HOLDED_API_KEY }
+```
+
+### v2 — Docs oficiales, mayo 2026 `[oficial]`
+
+- Header: `Authorization: Bearer sk_live_{HOLDED_API_KEY}`
+- URL base: `https://api.holded.com/api/v2/`
+- Permisos granulares por scope: `sales:invoices.read`, `sales:invoices.write`, etc.
+- Formato de API key: prefijo `sk_live_`
+- Respuesta correcta ante error: **HTTP 403** si permisos insuficientes
+
+```typescript
+// v2 — nueva
+headers: { 'Authorization': `Bearer ${process.env.HOLDED_API_KEY}` }
+```
+
+### Cuándo usar cada versión
+
+| Escenario | Versión | Header |
+|-----------|---------|--------|
+| Proyecto existente (prestashop-holded-middleware-prod) | v1 | `key: ...` |
+| Proyecto nuevo desde mayo 2026 | v2 | `Authorization: Bearer ...` |
+| Migración de proyecto existente | v1 → v2 | Ver [[holded-auth-change-bearer]] |
+
+> ⚠️ Research debe preguntar al cliente qué versión usa su cuenta antes de definir el API_PROFILE.
 
 ## Detección de éxito
 
@@ -66,6 +105,8 @@ const docId = response.data.id; // ID interno de 24 chars
 
 ## Endpoints validados en producción
 
+### v1 `[confirmado en producción]`
+
 ```
 GET  /contacts?page={n}                    ← búsqueda paginada
 POST /contacts                             ← crear contacto (campo type obligatorio: 'client' | 'supplier')
@@ -76,6 +117,16 @@ POST /documents/invoice                    ← crear factura
 POST /documents/creditnote                 ← crear abono
 POST /documents/{id}/paymentcreate        ← registrar cobro
 ```
+
+### v2 `[oficial — sin validar en producción]`
+
+```
+Base: https://api.holded.com/api/v2/
+GET  /invoices                             ← equivalente a /documents/invoice en v1
+POST /invoices                             ← crear factura
+```
+
+> ⚠️ Estructura de endpoints v2 en investigación. Research debe documentar equivalencias completas antes de cualquier migración.
 
 ## Gotchas críticos
 
@@ -114,6 +165,15 @@ Si `ENABLE_PRODUCT_SYNC=false`, no incluir `productId` en las líneas.
 En planes Enterprise con múltiples empresas, las llamadas sin `companyId` afectan a la empresa por defecto.
 Confirmar con el cliente si tiene plan multi-empresa.
 `[inferido — confirmar si aparece en nuevos proyectos]`
+
+### G6 — API v2 lanzada mayo 2026 — auth incompatible con v1
+
+v1 usa `key: ...`. v2 usa `Authorization: Bearer sk_live_...`.
+No hay compatibilidad entre versiones.
+Proyectos existentes que usen v1 seguirán funcionando mientras Holded no retire v1.
+**Proyectos nuevos deben usar v2 desde el inicio.**
+Ver [[holded-auth-change-bearer]] para análisis completo e impacto de migración.
+`[oficial — detectado 2026-05-20]`
 
 ## Panel de administración (tier Pro/Pro+)
 

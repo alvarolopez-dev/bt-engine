@@ -93,8 +93,8 @@ install_mcp() {
   fi
 }
 
-install_mcp "fetch" \
-  claude mcp add fetch -- npx -y @modelcontextprotocol/server-fetch
+# Nota: @modelcontextprotocol/server-fetch no existe en npm.
+# Claude Code incluye WebFetch nativo — no se necesita MCP de fetch externo.
 
 install_mcp "filesystem" \
   claude mcp add filesystem -- npx -y @modelcontextprotocol/server-filesystem ./dev-log

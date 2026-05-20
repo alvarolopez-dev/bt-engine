@@ -95,10 +95,8 @@ function Install-MCP {
   }
 }
 
-Install-MCP -Name "fetch" -CmdArgs @(
-  "mcp", "add", "fetch", "--",
-  "npx", "-y", "@modelcontextprotocol/server-fetch"
-)
+# Nota: @modelcontextprotocol/server-fetch no existe en npm.
+# Claude Code incluye WebFetch nativo — no se necesita MCP de fetch externo.
 
 Install-MCP -Name "filesystem" -CmdArgs @(
   "mcp", "add", "filesystem", "--",
