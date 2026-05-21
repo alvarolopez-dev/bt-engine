@@ -76,6 +76,7 @@ Gestionada por el agente Scribe. Actualizada tras cada proyecto.
 | Cambio | Plataforma | Detectado | Impacto |
 |--------|-----------|-----------|---------|
 | [[holded-auth-change-bearer]] | [[holded]] | 2026-05-20 | Alto — proyectos v1 en riesgo de deprecación |
+| [[nodejs20-deprecation]] | AWS Lambda | 2026-05-21 | **CRÍTICO** — block function create Jun 1, 2026 (10 días). Migrar a `nodejs22.x`. |
 
 ---
 
@@ -108,7 +109,7 @@ Gestionada por el agente Scribe. Actualizada tras cada proyecto.
 - **Breaking changes:** 1
 - **Históricos de coste:** 1
 - **Proyectos:** 1
-- **Nodos AWS:** 5
+- **Nodos AWS:** 5 (+ P11-P14 y breaking change nodejs20 en lambda-patterns)
 - **Índice:** 1
 
 ### Nodos con más enlaces entrantes
