@@ -405,16 +405,205 @@ async function batchGetProductos(skus: string[]): Promise<ProductMapping[]> {
 
 ---
 
+## P11 — Keep-alive en clientes HTTP (oficial AWS)
+
+AWS recomienda explícitamente keep-alive para evitar errores en conexiones idle.
+
+```typescript
+// ── CORRECTO: keep-alive en axios — fuera del handler ────────────────────────
+import https from 'https';
+import axios from 'axios';
+
+const httpsAgent = new https.Agent({ keepAlive: true });  // ← keep-alive
+
+export class HoldedService {
+  private readonly client = axios.create({
+    baseURL: 'https://api.holded.com/api/v2/',
+    httpsAgent,   // ← Pasar agente con keep-alive
+    headers: {
+      'Authorization': `Bearer ${process.env.HOLDED_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+  });
+}
+
+// ── PROBLEMA SIN KEEP-ALIVE ───────────────────────────────────────────────────
+// Lambda purga conexiones idle entre invocaciones.
+// Sin keep-alive: primera llamada post-pausa = ECONNRESET.
+// El singleton en module scope no ayuda si la conexión se cerró en el socket.
+```
+
+**Fuente:** AWS Best Practices docs oficiales Mayo 2026 — "Use a keep-alive directive to maintain persistent connections."
+
+---
+
+## P12 — Límites oficiales AWS Lambda (Mayo 2026)
+
+Extraídos de [gettingstarted-limits](https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html).
+
+### Compute y ejecución
+
+| Recurso | Límite |
+|---------|--------|
+| Memoria mínima | 128 MB |
+| Memoria máxima | 10,240 MB (10 GB) |
+| Timeout máximo | 900 s (15 minutos) |
+| /tmp storage | 512 MB – 10,240 MB |
+| File descriptors | 1,024 (Managed Instances: 4,096) |
+| Concurrencia default (cuenta) | 1,000 (ampliable) |
+| Escalado concurrencia | 1,000 nuevos entornos / 10 s por función |
+
+### Payload
+
+| Tipo | Límite |
+|------|--------|
+| Request/response sync | 6 MB cada uno |
+| Async | 1 MB |
+| Response streaming | Sin límite primeros 6 MB; 2 MB/s resto |
+| Headers (request line + headers) | 1 MB total |
+
+### Deploy
+
+| Recurso | Límite |
+|---------|--------|
+| .zip via API/SDK | 50 MB comprimido |
+| Contenido total (con layers) | 250 MB descomprimido |
+| Container image | 10 GB |
+| **Environment variables** | **4 KB total (todas combinadas)** |
+| Layers por función | 5 máximo |
+| Storage código (cuenta) | 75 GB |
+
+**Gotchas críticos:**
+- **4 KB env vars**: ARNs + URLs + nombres largos se acumulan. Si las vars superan 4 KB, el deploy falla. Usar Secrets Manager para valores grandes.
+- **6 MB payload sync**: Step Functions pasa output de Lambda como input al siguiente estado. Si `FetchOrders` devuelve JSON de pedidos, puede superar 6 MB con catálogos grandes. Patrón S3 como bus es la solución (ya documentado en [[step-functions-express]]).
+- **50 MB .zip**: `sls deploy` falla si el bundle comprimido supera el límite. node_modules bundleados sin tree-shaking son la causa habitual.
+
+---
+
+## P13 — Kill switch vía reserved concurrency
+
+```bash
+# Cortar todo el tráfico a una Lambda — efecto INMEDIATO
+# Todos los requests reciben HTTP 429 (throttled)
+aws lambda put-function-concurrency \
+  --function-name {nombre-función} \
+  --reserved-concurrent-executions 0
+
+# Verificar estado
+aws lambda get-function-concurrency --function-name {nombre-función}
+
+# Reactivar — eliminar limitación (vuelve a concurrencia compartida de cuenta)
+aws lambda delete-function-concurrency --function-name {nombre-función}
+```
+
+**Fórmula RPS para Function URLs:**
+```
+RPS máximo = 10 × reserved_concurrency
+
+Ejemplo:
+  Sin reserved concurrency  → RPS ilimitado (hasta concurrencia cuenta)
+  reserved_concurrency = 100 → RPS máximo = 1,000
+  reserved_concurrency = 0   → RPS = 0 (kill switch completo)
+```
+
+**Cuándo usar reserved_concurrency = 0:**
+- Lambda generando duplicados por bug en producción — cortar mientras se hace fix
+- Webhook bajo ataque — throttle sin eliminar la función
+- Bug crítico desplegado — ganar tiempo para rollback
+
+---
+
+## P14 — top-level await (ES Modules) — recomendación AWS
+
+AWS recomienda ES modules + `top-level await` para que la inicialización async ocurra durante la **fase de init** de Lambda (antes del primer invoke).
+
+```typescript
+// ── RECOMENDADO AWS (ES modules) ─────────────────────────────────────────────
+// En package.json: { "type": "module" } o archivo .mjs
+// top-level await corre en init phase — antes del primer invoke
+
+import { cargarSecretos } from './secrets.service.js';
+
+await cargarSecretos();  // ← init phase: más fiable, primer invoke más rápido
+
+export const main = async (event: any) => {
+  // secrets ya disponibles desde la init phase
+  await procesarPedido(event);
+};
+
+// ── NUESTRO PATRÓN ACTUAL (válido) ───────────────────────────────────────────
+// CommonJS + cargarSecretos() en handler con cache flag
+// Funciona correctamente. Diferencia: primer invoke es ~200ms más lento.
+// NO contradice las best practices — es un patrón alternativo aceptable.
+
+let secretosCargados = false;
+export const main = async (event: any) => {
+  await cargarSecretos();  // primer invoke: carga; warmstart: skip por flag
+  // ...
+};
+```
+
+**Estado deuda técnica:** `serverless-plugin-typescript` usa CommonJS por defecto. Migrar a ES modules requiere evaluar compatibilidad con el plugin y `serverless-offline`. Pendiente para próximo proyecto.
+
+---
+
+## ⚠️ Breaking change — nodejs20.x deprecado (URGENTE)
+
+```
+Runtime actual en producción: nodejs20.x (prestashop-holded-middleware-prod)
+
+Fechas oficiales AWS:
+  Deprecación:        April 30, 2026   ← YA PASÓ (hoy: 2026-05-21)
+  Block function create: June 1, 2026  ← EN 10 DÍAS
+  Block function update: July 1, 2026  ← EN 40 DÍAS
+
+Runtimes soportados (Mayo 2026):
+  nodejs22.x — deprecación: April 30, 2027
+  nodejs24.x — deprecación: April 30, 2028
+```
+
+**Impacto:** `sls deploy` crea/actualiza funciones Lambda. A partir del June 1, 2026, los deploys fallarán si el runtime es `nodejs20.x`.
+
+**Fix — serverless.yml:**
+
+```yaml
+provider:
+  runtime: nodejs22.x    # Era: nodejs20.x — CAMBIAR ANTES DEL 1 JUNIO 2026
+```
+
+**Fix — tsconfig.json:**
+
+```json
+{
+  "compilerOptions": {
+    "target": "es2022"   // nodejs22 soporta ES2022 — era es2020
+  }
+}
+```
+
+**Verificar compatibilidad antes de deploy:**
+- `nodejs22` usa `npm 10` (nodejs20 usaba `npm 9`) — posibles conflictos en lock files
+- V8 engine update puede cambiar comportamiento de edge cases numéricos
+- Probar en `stage: dev` antes de `stage: prod`
+
+Ver [[holded-auth-change-bearer]] para precedente de breaking change documentado en esta vault.
+
+---
+
 ## Anti-patrones documentados
 
 | Anti-patrón | Problema | Corrección |
 |---|---|---|
 | Instanciar cliente dentro del handler | Nueva conexión por invocación — lento | Singleton en module scope |
+| Axios sin keep-alive | ECONNRESET en conexiones idle — P11 | `https.Agent({ keepAlive: true })` |
 | `console.log` en producción | No structurado, difícil de filtrar en CloudWatch | Pino con child loggers |
 | `try/catch` en todo sin niveles | Fatal y recuperable tratados igual | 3 niveles explícitos |
 | Verificar + insertar DynamoDB | Race condition con Lambdas paralelas | ConditionalCheck atómico |
 | `any` en models de negocio | Pierde tipo tras frontera | Zod en boundary + tipos desde schema |
 | Llamada API dentro de loop sin caché | N llamadas para N ítems | Caché 2 niveles |
+| `forEach` con callbacks async | forEach no awaita — items se procesan en paralelo sin control | `for...of` o `await Promise.all()` |
+| Env vars > 4 KB total | Lambda rechaza el deploy — P12 | Mover valores largos a Secrets Manager |
+| `nodejs20.x` en serverless.yml | Block function create June 1, 2026 | Migrar a `nodejs22.x` |
 
 ---
 
