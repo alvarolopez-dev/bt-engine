@@ -85,26 +85,42 @@ Gestionada por el agente Scribe. Actualizada tras cada proyecto.
 
 ---
 
+## Conocimiento AWS validado en producción
+
+| Nodo | Descripción | Confianza |
+|------|-------------|-----------|
+| [[architecture-decision-tree]] | Árbol decisión: webhooks → Lambda URL; polling → Step Functions | High — producción |
+| [[lambda-patterns]] | P1-P10: handler structure, singleton, error handling 3 niveles, Pino, retry | High — 4 Lambdas producción |
+| [[serverless-framework-v3]] | IaC, patrón 3 tiers, CloudFront condicional, ADR-4/8 | High — producción |
+| [[dynamodb-patterns]] | PAY_PER_REQUEST, ConditionalCheck, snake_case ES, antipatrón E5 | High — 5 tablas producción |
+| [[step-functions-express]] | Express vs Standard, ADR-2 fetch+process separados, EventBridge cron | High — producción |
+
+**Stack AWS validado:** Serverless Framework v3.38.0 · Node.js 20.x · TypeScript · eu-west-2
+
+---
+
 ## Estadísticas de la red
 
-- **Total nodos:** 25
+- **Total nodos:** 30
 - **Plataformas:** 11
 - **Patrones:** 4
-- **Errores resueltos:** 6
+- **Errores resueltos:** 6 (+ 1 breaking change)
 - **Breaking changes:** 1
 - **Históricos de coste:** 1
 - **Proyectos:** 1
+- **Nodos AWS:** 5
 - **Índice:** 1
 
 ### Nodos con más enlaces entrantes
 
 | Nodo | Enlaces entrantes | Por qué es central |
 |------|------------------|--------------------|
-| [[prestashop-holded-middleware-prod]] | 12 | Referenciado por todos los errores, patrones y costes |
+| [[prestashop-holded-middleware-prod]] | 17 | Referenciado por errores, patrones, costes y todos los nodos AWS |
 | [[prestashop]] | 7 | Fuente de 4 de los 6 errores resueltos |
 | [[holded]] | 5 | Destino de la integración, referenciado en patrones y errores |
+| [[dynamodb-patterns]] | 5 | Referenciado por lambda-patterns, architecture-decision-tree, step-functions |
 
 ---
 
-*Última actualización: 2026-05-20*
+*Última actualización: 2026-05-21*
 *Próximo proyecto a documentar: añadir entrada en `projects/` y actualizar este índice.*
