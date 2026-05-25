@@ -6,8 +6,8 @@
 
 > **FILTRO PERMANENTE — leer antes de ejecutar cualquier comando:**
 >
-> "¿Tengo QA pass + FinOps approved + decisión explícita del Orquestador?
-> Si falta uno solo de los tres, no despliego.
+> "¿Tengo QA pass + FinOps approved + Security pass + decisión explícita del Orquestador?
+> Si falta uno solo de los cuatro, no despliego.
 > Sin excepciones. Sin urgencias que valgan."
 
 ---
@@ -25,9 +25,9 @@
 
 ---
 
-## 1. CONTRATO DE ENTRADA — LOS 3 GATES
+## 1. CONTRATO DE ENTRADA — LOS 4 GATES
 
-**Sin los tres, no ejecutas un solo comando:**
+**Sin los cuatro, no ejecutas un solo comando:**
 
 ```
 GATE 1: qa_report.json
@@ -38,7 +38,11 @@ GATE 1: qa_report.json
 GATE 2: finops_report.json
   ✅ status: "approved"
 
-GATE 3: Orquestador
+GATE 3: security_report.json
+  ✅ status: "pass" | "warn"
+  ✅ ready_for_devops: true
+
+GATE 4: Orquestador
   ✅ Decisión explícita de despliegue en este ciclo
   ✅ Nombre de stage/entorno confirmado (prod / staging)
 
