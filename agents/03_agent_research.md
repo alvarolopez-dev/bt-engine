@@ -4,6 +4,12 @@
 
 ---
 
+> **Lee `agents/00_CONSTRAINTS.md` antes de continuar.**
+> Perfiles precargados en vault: [[prestashop]] · [[holded]]
+> Schema de salida: [[api-profile-template]]
+
+---
+
 > **INSTRUCCIÓN INICIAL**
 >
 > Eres el Research del ecosistema de desarrollo de Bigtoone.
@@ -77,7 +83,7 @@ Si el usuario pegó un payload real en el Intake:
 Lo que el cliente tiene en producción es más fiable que el manual.
 
 **R4 — Gotchas de Bigtoone van precargados.**
-El conocimiento de proyectos anteriores vive en este agente.
+El conocimiento de proyectos anteriores vive en la vault.
 No hace falta redescubrir lo que ya se vivió en producción.
 Ver Sección 4.
 
@@ -96,8 +102,8 @@ Para cada plataforma en `intake_briefing.json`:
 ### Paso 1 — ¿Tenemos perfil precargado?
 
 ```
-¿La plataforma está en la Sección 4 de este agente?
-  → SÍ: cargar el perfil precargado como base
+¿La plataforma está en la Sección 4 de este agente (tabla de plataformas)?
+  → SÍ: cargar el perfil de la vault como base
         actualizar si la versión del cliente es diferente a la documentada
   → NO: investigar desde cero — ir al Paso 2
 ```
@@ -138,352 +144,31 @@ Si assets_provided.real_payloads = true en el intake_briefing:
 
 ---
 
-## 4. CONOCIMIENTO BASE PRECARGADO
+## 4. PLATAFORMAS PRECARGADAS EN LA VAULT
 
 Estas plataformas tienen perfil validado en producción real de Bigtoone.
-Fuente: `prestashop-holded-middleware-prod`, operativo desde 2026-05-15.
-Todos los datos marcados como `[confirmado en producción]` salvo indicación.
+**Cargar desde la vault antes de investigar.** No duplicar el perfil aquí.
 
----
+| Plataforma | Nodo vault | Confianza | Última validación | Notas clave |
+|---|---|---|---|---|
+| PrestaShop 1.7.x | [[prestashop]] | high — producción | 2026-05-15 | 8 gotchas confirmados. Auth: ws_key query param, no header |
+| Holded v1/v2 | [[holded]] | high — producción | 2026-05-20 | ⚠️ v2 lanzada mayo 2026 — auth incompatible. Proyecto nuevo → v2 obligatorio |
 
-### PRESTASHOP
+**Plataforma en vault:** cargar el perfil como base. Verificar solo si la versión del cliente difiere.
+**Plataforma nueva:** investigar desde cero. Ver [[api-profile-template]] para el esquema de salida.
 
-```json
-{
-  "platform": "PrestaShop",
-  "versions_validated": ["1.7.x"],
-  "confidence": "high",
-  "auth": {
-    "method": "Basic Auth",
-    "detail": "ws_key como usuario, sin contraseña. Base64 de 'ws_key:'",
-    "transport": "query param ws_key= en cada request",
-    "source": "[confirmado en producción]",
-    "warning": "No va en header Authorization — va como query param"
-  },
-  "base_url": "https://{shop_domain}/api",
-  "default_response_format": {
-    "fact": "XML por defecto",
-    "json_available_via": "query param output_format=JSON",
-    "source": "[confirmado en producción]"
-  },
-  "pagination": {
-    "type": "limit + offset",
-    "params": { "limit": "limit", "offset": "offset" },
-    "recommended_page_size": 100,
-    "source": "[oficial]"
-  },
-  "date_format": {
-    "format": "ISO 8601",
-    "timezone": "no incluido — asumir UTC",
-    "field_for_polling": "date_upd",
-    "warning": "Usar date_upd, NO date_add. Un pedido puede crearse semanas antes de pagarse. date_add perdería pedidos.",
-    "source": "[confirmado en producción]"
-  },
-  "rate_limits": {
-    "documented": "no documentado",
-    "observed": "no documentado",
-    "on_429": "no documentado — aplicar estrategia defensiva",
-    "source": "[confirmado en producción]"
-  },
-  "webhooks": {
-    "supported": true,
-    "validation": "HMAC-SHA256",
-    "source": "[oficial]"
-  },
-  "endpoints_validated": [
-    {
-      "name": "pedido individual",
-      "method": "GET",
-      "path": "/orders?filter[id]={id}&output_format=JSON&display=full"
-    },
-    {
-      "name": "pedidos por rango de fechas",
-      "method": "GET",
-      "path": "/orders?filter[date_upd]=[desde,hasta]&sort=date_upd_DESC&output_format=JSON&display=full"
-    },
-    {
-      "name": "datos de cliente",
-      "method": "GET",
-      "path": "/customers?filter[id]={id}&output_format=JSON&display=full"
-    },
-    {
-      "name": "dirección de facturación",
-      "method": "GET",
-      "path": "/addresses?filter[id]={id}&output_format=JSON&display=full"
-    },
-    {
-      "name": "catálogo de productos (paginado)",
-      "method": "GET",
-      "path": "/products?output_format=JSON&display=full&limit=100&offset={n}"
-    },
-    {
-      "name": "productos por IDs",
-      "method": "GET",
-      "path": "/products?filter[id]=[id1|id2|id3]&output_format=JSON&display=full"
-    }
-  ],
-  "gotchas": [
-    {
-      "issue": "order_rows viene en tres formatos distintos",
-      "formats": [
-        "string vacío (pedido sin líneas)",
-        "objeto singular { order_row: { id, ... } }",
-        "array [ { id, ... }, { id, ... } ]"
-      ],
-      "impact": "Si solo manejas el array, rompes en producción con pedidos de una línea",
-      "source": "[confirmado en producción]"
-    },
-    {
-      "issue": "Caracteres invisibles U+200E (LTR mark) en strings",
-      "fields_affected": "nombres de cliente, nombres de producto",
-      "impact": "Comparaciones de string fallan, visualización corrupta en destino",
-      "source": "[confirmado en producción]"
-    },
-    {
-      "issue": "IVA no viene explícito como porcentaje",
-      "fact": "Solo vienen precio con IVA y precio sin IVA",
-      "impact": "El porcentaje de IVA debe calcularse matemáticamente",
-      "source": "[confirmado en producción]"
-    },
-    {
-      "issue": "Nombres de producto multi-idioma en tres formatos",
-      "formats": [
-        "string directo",
-        "array con objetos { id, value }",
-        "objeto { language: [ { value } ] }"
-      ],
-      "impact": "Parseo rígido rompe según versión y configuración de idioma",
-      "source": "[confirmado en producción]"
-    },
-    {
-      "issue": "product_id puede cambiar si el producto se recrea",
-      "stable_key": "product_reference (SKU)",
-      "impact": "Usar product_id como clave genera duplicados o pérdidas al recrear productos",
-      "source": "[confirmado en producción]"
-    },
-    {
-      "issue": "404 es un caso normal, no un error",
-      "context": "Un pedido o cliente puede no encontrarse si fue eliminado",
-      "impact": "Tratar 404 como excepción genera fallos innecesarios en el batch",
-      "source": "[confirmado en producción]"
-    },
-    {
-      "issue": "Algunos campos devuelven arrays vacíos como string vacío",
-      "source": "[confirmado en producción]"
-    },
-    {
-      "issue": "SSL puede ser autofirmado en instancias de desarrollo",
-      "impact": "HTTPS requests fallan en entornos de test del cliente",
-      "source": "[confirmado en producción]"
-    }
-  ]
-}
-```
-
----
-
-### HOLDED
-
-> ⚠️ **Holded lanzó API v2 en mayo 2026 — auth incompatible con v1.**
-> **Regla:** proyecto nuevo → usar v2 obligatoriamente.
-> Proyecto existente → verificar qué versión usa ANTES de tocar nada.
-> Ver vault: `dev-log/knowledge-base/errors/holded-auth-change-bearer.md`
-
-```json
-{
-  "platform": "Holded",
-  "versions_validated": ["invoicing/v1", "v2"],
-  "active_version": "v2",
-  "version_rule": "proyecto nuevo → v2 obligatorio | proyecto existente → verificar antes de tocar",
-  "confidence": "high",
-
-  "auth_v1": {
-    "status": "DEPRECATED — solo para proyectos existentes que ya la usan",
-    "method": "API Key en header literal",
-    "header_name": "key",
-    "header_value": "{HOLDED_API_KEY}",
-    "header_note": "literal minúscula 'key' — NO Authorization, NO X-API-Key",
-    "base_url": "https://api.holded.com/api/invoicing/v1",
-    "fallo_opaco": "Si el header está mal, Holded no devuelve 401 — falla de forma opaca",
-    "source": "[confirmado en producción — prestashop-holded-middleware-prod 2026-05-15]"
-  },
-
-  "auth_v2": {
-    "status": "ACTIVA — usar en proyectos nuevos desde mayo 2026",
-    "method": "Bearer token estándar HTTP",
-    "header_name": "Authorization",
-    "header_value": "Bearer sk_live_{HOLDED_API_KEY}",
-    "api_key_prefix": "sk_live_",
-    "api_key_obtener": "Panel Holded → Ajustes → API → Generar nueva clave",
-    "base_url": "https://api.holded.com/api/v2/",
-    "scoped_permissions": true,
-    "scopes_ejemplo": ["sales:invoices.read", "sales:invoices.write"],
-    "error_auth": "HTTP 403 explícito si permisos insuficientes",
-    "source": "[oficial — docs holded.com/es/desarrolladores verificadas 2026-05-20]"
-  },
-
-  "typescript_auth": {
-    "v1": "headers: { 'key': process.env.HOLDED_API_KEY! }",
-    "v2": "headers: { 'Authorization': `Bearer ${process.env.HOLDED_API_KEY!}` }"
-  },
-
-  "success_detection": {
-    "fact": "response.data.status === 1 con campo id presente",
-    "warning": "HTTP 200 no garantiza éxito — verificar status en el body. Aplica en v1. Verificar si v2 mantiene este comportamiento.",
-    "source": "[confirmado en producción v1] [inferido v2 — confirmar]"
-  },
-  "date_format": {
-    "format": "Unix timestamp (segundos)",
-    "warning": "NO acepta ISO 8601 — convertir siempre antes de enviar",
-    "source": "[confirmado en producción v1]"
-  },
-  "id_format": {
-    "format": "string alfanumérico de 24 caracteres",
-    "warning": "NO son UUIDs estándar",
-    "source": "[confirmado en producción v1]"
-  },
-  "pagination": {
-    "type": "page",
-    "param": "page",
-    "starts_at": 1,
-    "page_size": 100,
-    "warning": "Empieza en page=1, no page=0",
-    "source": "[confirmado en producción v1]"
-  },
-  "rate_limits": {
-    "requests_per_minute": 60,
-    "on_429": "no documentado explícitamente — aplicar estrategia defensiva",
-    "risk": "Con múltiples Lambdas concurrentes puede saturarse",
-    "source": "[confirmado en producción v1]"
-  },
-
-  "endpoints_v1_validated": [
-    { "name": "buscar contactos (paginado)", "method": "GET",  "path": "/contacts?page={n}",              "note": "Búsqueda por campo 'code'" },
-    { "name": "crear contacto",             "method": "POST", "path": "/contacts",                        "required_field": "type: 'client' | 'supplier'" },
-    { "name": "plan de cuentas contables",  "method": "GET",  "path": "/chartaccounts" },
-    { "name": "catálogo de productos",      "method": "GET",  "path": "/products" },
-    { "name": "crear producto",             "method": "POST", "path": "/products" },
-    { "name": "crear factura",              "method": "POST", "path": "/documents/invoice" },
-    { "name": "crear abono",               "method": "POST", "path": "/documents/creditnote" },
-    { "name": "registrar cobro",           "method": "POST", "path": "/documents/{id}/paymentcreate" }
-  ],
-
-  "endpoints_v2_pending_validation": {
-    "warning": "Estructura v2 en investigación — NO usar sin validar primero con el cliente",
-    "known": [
-      { "name": "crear factura (v2)", "method": "POST", "path": "/invoices", "source": "[oficial — sin validar en producción]" }
-    ],
-    "action": "Research debe documentar equivalencias completas v1→v2 antes de cualquier proyecto nuevo con Holded"
-  },
-
-  "gotchas": [
-    {
-      "issue": "API v2 lanzada mayo 2026 — auth completamente incompatible con v1",
-      "impact": "Proyectos v1 existentes funcionan pero están en riesgo. Proyectos nuevos DEBEN usar v2.",
-      "migracion": "Cambiar header 'key' → 'Authorization: Bearer sk_live_...' y URL base",
-      "source": "[oficial — detectado 2026-05-20]"
-    },
-    {
-      "issue": "accountingAccountId requiere ID interno de 24 chars, no el número visible",
-      "example": "El número '700' visible en pantalla NO funciona. Se necesita el ID interno de chartaccounts.",
-      "impact": "Holded lo ignora silenciosamente y asigna cuenta por defecto — sin error, factura en cuenta equivocada",
-      "source": "[confirmado en producción v1]"
-    },
-    {
-      "issue": "Búsqueda de contactos paginada — hasta ~10 páginas de 100 contactos",
-      "impact": "Clientes con más de 1.000 contactos pueden no encontrarse si se corta la paginación",
-      "source": "[confirmado en producción v1]"
-    },
-    {
-      "issue": "Contacto fallido al crear → no bloquea la factura",
-      "fact": "Si no existe, crear en el momento. La factura no debe fallar por esto.",
-      "source": "[confirmado en producción v1]"
-    },
-    {
-      "issue": "Cobro fallido → no revierte la factura ya creada",
-      "fact": "Factura y cobro son operaciones independientes.",
-      "source": "[confirmado en producción v1]"
-    },
-    {
-      "issue": "productId en líneas de factura vincula al catálogo de Holded",
-      "fact": "El producto debe existir en el catálogo antes de referenciar su ID",
-      "source": "[confirmado en producción v1]"
-    },
-    {
-      "issue": "Algunos planes requieren companyId",
-      "impact": "En planes Enterprise multi-empresa, sin companyId afecta a la empresa por defecto",
-      "source": "[inferido — confirmar con cliente si tiene plan multi-empresa]"
-    }
-  ]
-}
-```
+> ⚠️ **Holded breaking change mayo 2026:** API v2 usa `Authorization: Bearer sk_live_{KEY}`.
+> Proyectos nuevos DEBEN usar v2. Proyectos existentes: verificar versión ANTES de tocar nada.
+> Ver [[holded]] y [[holded-auth-change-bearer]] en vault.
 
 ---
 
 ## 5. API_PROFILE — ESQUEMA DE SALIDA
 
-Para plataformas no precargadas, generar este esquema completo.
-Ningún campo puede quedar vacío — usar `"no documentado — aplicar estrategia defensiva"` si no se encuentra.
+Ver [[api-profile-template]] para el schema JSON completo con todos los campos.
 
-```json
-{
-  "platform": "NombrePlataforma",
-  "version": "vX.Y — [oficial] | [inferido]",
-  "last_researched": "fecha",
-  "confidence": "high | medium | low",
-  "auth": {
-    "method": "",
-    "detail": "",
-    "source": "[oficial|comunidad|confirmado en producción|inferido]"
-  },
-  "base_url": "",
-  "pagination": {
-    "type": "limit/offset | cursor | page | Link header | no documentado — aplicar estrategia defensiva",
-    "params": {},
-    "max_page_size": 0,
-    "source": ""
-  },
-  "date_format": {
-    "format": "",
-    "timezone": "",
-    "source": ""
-  },
-  "rate_limits": {
-    "requests_per_minute": "N | no documentado — aplicar estrategia defensiva",
-    "on_429": "comportamiento observado | no documentado — aplicar estrategia defensiva",
-    "source": ""
-  },
-  "webhooks": {
-    "supported": true,
-    "events_available": [],
-    "validation_method": "",
-    "source": ""
-  },
-  "relevant_endpoints": [
-    {
-      "name": "",
-      "method": "",
-      "path": "",
-      "required_params": [],
-      "response_shape": {},
-      "error_codes": {},
-      "source": ""
-    }
-  ],
-  "gotchas": [
-    {
-      "issue": "",
-      "impact": "",
-      "source": "[oficial|comunidad|confirmado en producción|inferido]"
-    }
-  ],
-  "payload_from_user": {
-    "provided": false,
-    "content": null,
-    "discrepancies_with_docs": []
-  }
-}
-```
+Para plataformas nuevas (no en la tabla §4), generar el schema completo.
+Ningún campo puede quedar vacío — usar `"no documentado — aplicar estrategia defensiva"` si no se encuentra.
 
 ---
 
