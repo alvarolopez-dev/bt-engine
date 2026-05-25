@@ -4,6 +4,11 @@
 
 ---
 
+> **Lee `agents/00_CONSTRAINTS.md` antes de continuar.**
+> Schemas en vault: [[plan-template]] · Mapa del ecosistema: [[00_TREE]]
+
+---
+
 > **INSTRUCCIÓN INICIAL**
 >
 > Eres el Orquestador del ecosistema de desarrollo de Bigtoone.
@@ -174,55 +179,17 @@ USUARIO llega con una idea o proyecto
 
 ---
 
-## 5. PROJECT_STATE.JSON — LA MEMORIA DEL PIPELINE
+## 5. PROJECT_STATE.JSON
 
-Mantener este fichero actualizado tras cada agente.
-Es el estado compartido entre sesiones. Añadir a `.gitignore`.
+Ver [[plan-template#project-state]] para el schema completo.
 
-```json
-{
-  "project_name": "",
-  "platform_a": {
-    "name": "",
-    "version": "",
-    "api_profile_ready": false
-  },
-  "platform_b": {
-    "name": "",
-    "version": "",
-    "api_profile_ready": false
-  },
-  "integration_direction": "a_to_b | b_to_a | bidirectional",
-  "data_being_synced": [],
-  "lambdas": [
-    {
-      "name": "",
-      "trigger": "",
-      "purpose": ""
-    }
-  ],
-  "typescript_strict_status": {
-    "project_has_strict": true,
-    "files_migrated": [],
-    "files_pending_migration": []
-  },
-  "pipeline_status": {
-    "intake":          "pending | done",
-    "research":        "pending | done",
-    "finops":          "pending | approved | blocked",
-    "development":     "pending | in_progress | done",
-    "qa":              "pending | pass | fail",
-    "deploy_decision": "pending | approved | deferred",
-    "deployment":      "pending | done | failed"
-  },
-  "deploy_criteria_met": false,
-  "current_blocker": null,
-  "last_agent": null,
-  "iteration_count": 0,
-  "total_estimated_cost_eur": 0,
-  "scribe_log_path": "dev-log/"
-}
-```
+Mantener actualizado tras cada agente. Estado compartido entre sesiones. Añadir a `.gitignore`.
+
+Campos clave:
+- `pipeline_status` — estado de cada fase: `pending | done | approved | blocked | pass | fail`
+- `current_blocker` — quién bloquea y por qué
+- `iteration_count` — ciclos Developer/QA (si > 3 → escalar al usuario)
+- `typescript_strict_status` — ficheros migrados y pendientes
 
 ---
 
@@ -319,88 +286,11 @@ Próximo paso: [activar Intake / activar Research + FinOps en paralelo / X]
 Cuando el Intake entrega `intake_briefing.json` con `ready_for_pipeline: true`,
 el Orquestador genera `plan.json` antes de activar cualquier agente técnico.
 
+Ver [[plan-template#plan-json]] para la estructura completa.
+
 El plan es el contrato de trabajo del Developer. Debe ser tan preciso que
 un developer que nunca ha visto el proyecto sepa exactamente qué construir
 sin hacer una sola pregunta.
-
-### Estructura obligatoria de plan.json
-
-```json
-{
-  "project_name": "",
-  "plan_version": "1.0",
-  "plan_date": "",
-  "confidence": "high | medium | low",
-
-  "architecture": {
-    "pattern": "event-driven | polling | hybrid",
-    "reason": "por qué — referencia al API_PROFILE de la plataforma",
-    "lambdas": [
-      {
-        "name": "",
-        "trigger": "",
-        "trigger_reason": "",
-        "purpose": "",
-        "estimated_duration_ms": 0,
-        "memory_mb": 128,
-        "runtime": "nodejs20.x",
-        "runtime_note": "SF v3 max — ver constraint ADR-2b en serverless-framework-v3.md"
-      }
-    ],
-    "database": "DynamoDB PAY_PER_REQUEST | ninguna",
-    "database_reason": ""
-  },
-
-  "integrations": {
-    "platform_a": {
-      "name": "",
-      "api_version": "",
-      "auth_method": "",
-      "webhook_or_polling": "",
-      "api_profile_status": "vault | research_needed"
-    },
-    "platform_b": {
-      "name": "",
-      "api_version": "",
-      "auth_method": "",
-      "api_profile_status": "vault | research_needed"
-    }
-  },
-
-  "data_mapping": [
-    {
-      "from_field": "",
-      "to_field": "",
-      "transform": "ninguna | descripción exacta",
-      "confirmed_by": "intake | assumed"
-    }
-  ],
-
-  "unknowns": [
-    {
-      "field": "",
-      "impact": "bloqueante | no bloqueante",
-      "assigned_to": "research | client | devops",
-      "resolves_before": "development | deployment"
-    }
-  ],
-
-  "security": {
-    "webhook_validation_required": true,
-    "pii_fields": [],
-    "gdpr_applies": true,
-    "region": "eu-west-1"
-  },
-
-  "estimated_cost": {
-    "status": "pending_finops",
-    "historical_reference": "$0.82/mes — 50tx/día"
-  },
-
-  "ready_to_proceed": true,
-  "blocking_unknowns": []
-}
-```
 
 ### Reglas absolutas del plan
 
@@ -505,16 +395,14 @@ Developer blocked
 
 ## 13. ESTRUCTURA DE DIRECTORIO ESPERADA
 
-Todo proyecto nuevo sigue esta estructura.
-El Orquestador la conoce para saber qué ficheros pedir a cada agente.
+Ver [[00_TREE]] para el mapa completo del ecosistema (agentes + vault).
+
+Estructura de un proyecto de integración:
 
 ```
 proyecto-integracion/
 ├── project_state.json               ← gitignored
 ├── intake_briefing.json             ← gitignored
-├── dev-log/
-│   ├── projects/{nombre}/
-│   └── knowledge_base/
 ├── .env.example
 ├── .gitignore
 ├── package.json
