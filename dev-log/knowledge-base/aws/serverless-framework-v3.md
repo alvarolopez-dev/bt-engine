@@ -33,6 +33,55 @@ Fecha:      2026-05-19 (prestashop-holded-middleware-prod)
 
 ---
 
+## ⚠️ CONSTRAINT CRÍTICO — Node.js runtime
+
+**Estado a 2026-05-25:**
+
+| Elemento | Estado |
+|---|---|
+| Runtime actual (`serverless.yml`) | `nodejs20.x` |
+| nodejs20.x deprecado por AWS | April 30, 2026 ✓ (ya pasado) |
+| Block CREATE nuevas funciones AWS | **June 1, 2026** |
+| nodejs22.x en SF v3 enum | **NO** — `ValidationError` en deploy |
+| nodejs22.x soportado desde | SF v4.4.12 (comercial) |
+| SF v4 | Breaking changes en config + suscripción de pago |
+
+**Validación SF v3 (`lib/plugins/aws/provider.js` — enum hardcoded):**
+
+```javascript
+// nodejs22.x NO aparece — deploy con nodejs22.x falla en validación local
+// antes de llegar a AWS
+awsLambdaRuntime: {
+  enum: [
+    'nodejs14.x', 'nodejs16.x', 'nodejs18.x', 'nodejs20.x',
+    // nodejs22.x — ausente
+  ]
+}
+```
+
+**Impacto por fecha:**
+
+```
+April 30, 2026   nodejs20.x officially deprecated por AWS (ya pasado)
+June 1, 2026     AWS bloquea CREATE de funciones nuevas con nodejs20.x
+                 → Proyectos nuevos no pueden crear Lambdas
+                 → Funciones existentes: siguen ejecutando y actualizándose (por ahora)
+TBD              AWS bloqueará UPDATES de funciones existentes (fecha no anunciada)
+TBD              AWS bloqueará INVOCACIONES (fecha no anunciada)
+```
+
+**Opciones de migración (decisión pendiente — ADR-2b):**
+
+| Opción | Esfuerzo | Coste adicional | Resultado |
+|---|---|---|---|
+| SF v3 → v4 | Alto — breaking changes en config | Suscripción comercial | `nodejs22.x` disponible |
+| Ejectar a CDK/SAM | Alto — reescribir IaC completa | $0 | `nodejs22.x` disponible |
+| Esperar sin migrar | Cero ahora | $0 | Funciones existentes degradadas progresivamente |
+
+**Pendiente: ADR-2b** — Evaluación formal SF v3 → v4 vs alternativa IaC.
+
+---
+
 ## Estructura base de serverless.yml
 
 ```yaml

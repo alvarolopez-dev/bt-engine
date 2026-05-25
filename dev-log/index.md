@@ -76,7 +76,7 @@ Gestionada por el agente Scribe. Actualizada tras cada proyecto.
 | Cambio | Plataforma | Detectado | Impacto |
 |--------|-----------|-----------|---------|
 | [[holded-auth-change-bearer]] | [[holded]] | 2026-05-20 | Alto — proyectos v1 en riesgo de deprecación |
-| [[nodejs20-deprecation]] | AWS Lambda | 2026-05-21 | **CRÍTICO** — block function create Jun 1, 2026 (10 días). Migrar a `nodejs22.x`. |
+| [[nodejs20-deprecation]] | AWS Lambda + SF v3 | 2026-05-25 | **ALTO** — nodejs20.x deprecado. Block CREATE Jun 1, 2026. `nodejs22.x` requiere SF v4 (comercial) — SF v3 lo rechaza en validación. Decisión migración pendiente (ADR-2b). |
 
 ---
 
@@ -123,5 +123,5 @@ Gestionada por el agente Scribe. Actualizada tras cada proyecto.
 
 ---
 
-*Última actualización: 2026-05-21*
+*Última actualización: 2026-05-25*
 *Próximo proyecto a documentar: añadir entrada en `projects/` y actualizar este índice.*
