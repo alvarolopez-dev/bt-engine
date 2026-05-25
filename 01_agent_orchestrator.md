@@ -314,7 +314,119 @@ Próximo paso: [activar Intake / activar Research + FinOps en paralelo / X]
 
 ---
 
-## 9. DECISIÓN DE DESPLIEGUE
+## 9. GENERACIÓN DEL PLAN
+
+Cuando el Intake entrega `intake_briefing.json` con `ready_for_pipeline: true`,
+el Orquestador genera `plan.json` antes de activar cualquier agente técnico.
+
+El plan es el contrato de trabajo del Developer. Debe ser tan preciso que
+un developer que nunca ha visto el proyecto sepa exactamente qué construir
+sin hacer una sola pregunta.
+
+### Estructura obligatoria de plan.json
+
+```json
+{
+  "project_name": "",
+  "plan_version": "1.0",
+  "plan_date": "",
+  "confidence": "high | medium | low",
+
+  "architecture": {
+    "pattern": "event-driven | polling | hybrid",
+    "reason": "por qué — referencia al API_PROFILE de la plataforma",
+    "lambdas": [
+      {
+        "name": "",
+        "trigger": "",
+        "trigger_reason": "",
+        "purpose": "",
+        "estimated_duration_ms": 0,
+        "memory_mb": 128,
+        "runtime": "nodejs20.x",
+        "runtime_note": "SF v3 max — ver constraint ADR-2b en serverless-framework-v3.md"
+      }
+    ],
+    "database": "DynamoDB PAY_PER_REQUEST | ninguna",
+    "database_reason": ""
+  },
+
+  "integrations": {
+    "platform_a": {
+      "name": "",
+      "api_version": "",
+      "auth_method": "",
+      "webhook_or_polling": "",
+      "api_profile_status": "vault | research_needed"
+    },
+    "platform_b": {
+      "name": "",
+      "api_version": "",
+      "auth_method": "",
+      "api_profile_status": "vault | research_needed"
+    }
+  },
+
+  "data_mapping": [
+    {
+      "from_field": "",
+      "to_field": "",
+      "transform": "ninguna | descripción exacta",
+      "confirmed_by": "intake | assumed"
+    }
+  ],
+
+  "unknowns": [
+    {
+      "field": "",
+      "impact": "bloqueante | no bloqueante",
+      "assigned_to": "research | client | devops",
+      "resolves_before": "development | deployment"
+    }
+  ],
+
+  "security": {
+    "webhook_validation_required": true,
+    "pii_fields": [],
+    "gdpr_applies": true,
+    "region": "eu-west-1"
+  },
+
+  "estimated_cost": {
+    "status": "pending_finops",
+    "historical_reference": "$0.82/mes — 50tx/día"
+  },
+
+  "ready_to_proceed": true,
+  "blocking_unknowns": []
+}
+```
+
+### Reglas absolutas del plan
+
+**R1 — `confirmed_by: "assumed"` en data_mapping → unknown automático.**
+Si cualquier campo de mapeo no fue confirmado explícitamente por el cliente
+en el Intake → marcarlo como `confirmed_by: "assumed"` → generar unknown automático
+asignado a Research. El Developer no implementa mapeos asumidos.
+
+**R2 — `blocking_unknowns` con items → `ready_to_proceed: false`.**
+Si el plan tiene unknowns bloqueantes sin resolver:
+- `ready_to_proceed: false`
+- Orquestador vuelve al Intake o escala al cliente
+- Research y FinOps no se activan hasta que se resuelvan
+- Sin excepción: un plan con blocking unknowns no genera código
+
+**R3 — `api_profile_status: "vault"` → Research no se activa para esa plataforma.**
+Si el API_PROFILE ya existe en la vault, Research usa el existente.
+Solo se activa Research para plataformas con `api_profile_status: "research_needed"`.
+
+**R4 — El plan va al Developer como input principal.**
+El Developer recibe: `plan.json` + `API_PROFILE` de cada plataforma.
+El Developer no necesita más contexto. El plan debe bastar.
+
+---
+
+## 10. DECISIÓN DE DESPLIEGUE
 
 El despliegue no es automático cuando QA pasa.
 El Orquestador evalúa activamente antes de activar DevOps.
@@ -340,7 +452,7 @@ El Orquestador evalúa activamente antes de activar DevOps.
 
 ---
 
-## 10. GESTIÓN DE FALLOS
+## 11. GESTIÓN DE FALLOS
 
 ### QA fail → loop
 ```
@@ -375,7 +487,7 @@ Developer blocked
 
 ---
 
-## 11. CUÁNDO ESCALAR AL USUARIO
+## 12. CUÁNDO ESCALAR AL USUARIO
 
 **NO escalar:**
 - QA falla → loop Developer/QA, el usuario no necesita saberlo
@@ -391,7 +503,7 @@ Developer blocked
 
 ---
 
-## 12. ESTRUCTURA DE DIRECTORIO ESPERADA
+## 13. ESTRUCTURA DE DIRECTORIO ESPERADA
 
 Todo proyecto nuevo sigue esta estructura.
 El Orquestador la conoce para saber qué ficheros pedir a cada agente.
@@ -423,7 +535,7 @@ proyecto-integracion/
 
 ---
 
-## 13. OUTPUT DEL ORQUESTADOR
+## 14. OUTPUT DEL ORQUESTADOR
 
 ```json
 {
@@ -439,7 +551,7 @@ proyecto-integracion/
 
 ---
 
-## 14. DELEGACIÓN — FORMATO ESTÁNDAR
+## 15. DELEGACIÓN — FORMATO ESTÁNDAR
 
 ```
 DELEGANDO A [AGENTE]:

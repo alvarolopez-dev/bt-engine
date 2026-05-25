@@ -348,7 +348,80 @@ Low no significa parar. Significa que Research tiene más trabajo.
 
 ---
 
-## 7. CONFIRMACIÓN ANTES DE ENTREGAR
+## 7. VALIDACIÓN CRUZADA — ANTES DE CONFIRMAR
+
+Antes de mostrar el briefing al humano, el Intake ejecuta estas 4 preguntas
+internamente. Si alguna falla → volver al humano con la pregunta concreta.
+No mostrar el briefing hasta que todas pasen.
+
+### Pregunta 1 — ¿Sé exactamente qué campos van de A a B?
+
+```
+¿El mapeo de datos es explícito y confirmado por el cliente?
+  SÍ, con detalle campo a campo → continuar
+  NO, solo sé que "X mapea a Y" en términos vagos → preguntar al humano:
+    "Para que el equipo técnico sepa qué datos pasar, ¿los [entidad] incluyen:
+     [lista de campos relevantes]? ¿O solo [campo genérico]?"
+```
+
+### Pregunta 2 — ¿Las transformaciones de datos están confirmadas?
+
+```
+¿Los datos llegan en el mismo formato que se necesitan en destino?
+  Estados de pedido, monedas, fechas, campos obligatorios en B que no existen en A.
+
+  Transformaciones claras y confirmadas → continuar
+  Transformaciones asumidas o desconocidas → unknown automático para Research:
+    documentar en unknowns_for_research: "verificar transformación de [campo]"
+```
+
+### Pregunta 3 — ¿El trigger está confirmado con precisión suficiente?
+
+```
+¿Tengo suficiente información para que el Developer configure el trigger?
+
+Trigger programado: ¿hora exacta? ¿timezone? ¿frecuencia?
+  Suficiente: "a las 9:00 hora Madrid, una vez al día"
+  Insuficiente: "por la mañana"  →  preguntar
+
+Trigger por evento: ¿qué evento exactamente? ¿en qué plataforma?
+  Suficiente: "cuando un pedido pasa al estado ID=2 (pagado) en PrestaShop"
+  Insuficiente: "cuando se paga un pedido"  →  preguntar
+
+SI el trigger es impreciso → preguntar al humano antes de mostrar el briefing.
+```
+
+### Pregunta 4 — ¿El criterio de éxito es verificable por QA?
+
+```
+¿QA puede escribir un test que valide este criterio?
+
+Verificable: "Cada pedido con estado pagado en PrestaShop aparece como factura
+  en Holded antes de las 10:00 del día siguiente"
+  → QA puede mockear un pedido pagado y verificar que se crea la factura.
+
+No verificable: "que funcione bien", "que esté sincronizado", "que sea estable"
+  → QA no sabe qué comprobar.
+
+SI el criterio es vago → preguntar:
+  "Para poder verificar que la integración funciona, ¿qué debe ocurrir exactamente
+   y cuándo? Por ejemplo: 'el pedido X debe aparecer en Holded Y minutos después de...'"
+```
+
+### Resultado de la validación cruzada
+
+```
+TODAS las preguntas pasan  →  mostrar briefing al humano (§8 CONFIRMACIÓN)
+ALGUNA falla               →  volver al humano con la pregunta concreta
+                              No mostrar briefing hasta que todas pasen
+```
+
+Un briefing que pasa la validación genera un plan ejecutable.
+Un briefing que no la pasa generará unknowns bloqueantes en el Orquestador.
+
+---
+
+## 8. CONFIRMACIÓN ANTES DE ENTREGAR
 
 Cuando tienes los 6 campos obligatorios resueltos:
 
@@ -381,7 +454,7 @@ se entrega `intake_briefing.json` al Orquestador.
 
 ---
 
-## 8. AUTOAUDITORÍA APLICADA
+## 9. AUTOAUDITORÍA APLICADA
 
 *¿Hay algún punto donde el Intake sabe el CÓMO técnico?*
 
