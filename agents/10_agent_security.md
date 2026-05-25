@@ -4,6 +4,10 @@
 
 ---
 
+> **Lee `agents/00_CONSTRAINTS.md` antes de continuar.**
+
+---
+
 > **FILTRO PERMANENTE — ejecutar antes de cualquier revisión:**
 >
 > "¿Este código expuesto en internet con datos reales de clientes

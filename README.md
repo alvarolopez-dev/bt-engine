@@ -53,6 +53,8 @@ bigtoone-agents/
 ├── setup.ps1                         # Windows PowerShell
 │
 ├── agents/
+│   ├── 00_CONSTRAINTS.md             # Constraints universales — leer ANTES de todo
+│   ├── 00_TREE.md                    # Mapa del ecosistema — pipeline + vault + agentes
 │   ├── 01_agent_orchestrator.md      # Director del pipeline — QUÉ y QUIÉN, nunca CÓMO
 │   ├── 02_agent_intake.md            # Interrogador — extrae, nunca asume
 │   ├── 03_agent_research.md          # Investigador de APIs — hechos, nunca estrategias
@@ -61,7 +63,8 @@ bigtoone-agents/
 │   ├── 06_agent_qa.md                # QA — tests con API_PROFILE real, no con suposiciones
 │   ├── 07_agent_devops.md            # Despliegue — despliega, verifica, reporta
 │   ├── 08_agent_scribe.md            # Memoria permanente — siempre activo en segundo plano
-│   └── 09_HOW_TO_USE.md             # Esta guía
+│   ├── 09_HOW_TO_USE.md             # Guía de uso del ecosistema
+│   └── 10_agent_security.md          # Auditor de seguridad — audita y reporta
 │
 └── dev-log/                          # Vault de Obsidian — memoria del ecosistema
     ├── index.md                      # Mapa de la red
@@ -69,7 +72,9 @@ bigtoone-agents/
     │   ├── platforms/                # Perfiles de plataformas con gotchas documentados
     │   ├── errors/                   # Errores resueltos con síntoma, causa y solución
     │   ├── patterns/                 # Patrones validados en producción
-    │   └── costs/                    # Histórico de costes reales por proyecto
+    │   ├── security/                 # Checklist pre-deploy, GDPR, webhook validation
+    │   ├── costs/                    # Histórico de costes reales por proyecto
+    │   └── agent-details/            # Templates y schemas extraídos de agentes
     └── projects/                     # Documentación por proyecto (intake, dev log, lessons learned)
 ```
 
@@ -79,7 +84,8 @@ bigtoone-agents/
 
 | MCP | Propósito |
 |-----|-----------|
-| `filesystem` | Acceso a `dev-log/` para que el Scribe escriba en la vault |
+| `filesystem` | Acceso directo a `dev-log/` — fallback cuando obsidian-vault no está disponible |
+| `obsidian-vault` | Leer/escribir la vault con semántica Obsidian (búsqueda, frontmatter, enlaces) |
 
 > `@modelcontextprotocol/server-fetch` no existe en npm. Claude Code incluye WebFetch nativo — no se necesita MCP externo para fetch.
 

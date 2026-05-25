@@ -99,6 +99,9 @@ install_mcp() {
 install_mcp "filesystem" \
   claude mcp add filesystem -- npx -y @modelcontextprotocol/server-filesystem ./dev-log
 
+install_mcp "obsidian-vault" \
+  claude mcp add-json obsidian-vault '{"type":"stdio","command":"npx","args":["-y","@bitbonsai/mcpvault@latest","./dev-log"]}'
+
 # Verificación final de MCPs
 echo ""
 info "MCPs instalados actualmente:"
@@ -114,7 +117,9 @@ DIRS=(
   "dev-log/knowledge-base/platforms"
   "dev-log/knowledge-base/errors"
   "dev-log/knowledge-base/patterns"
+  "dev-log/knowledge-base/security"
   "dev-log/knowledge-base/costs"
+  "dev-log/knowledge-base/agent-details"
   "dev-log/projects"
 )
 

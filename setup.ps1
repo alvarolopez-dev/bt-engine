@@ -103,6 +103,11 @@ Install-MCP -Name "filesystem" -CmdArgs @(
   "npx", "-y", "@modelcontextprotocol/server-filesystem", ".\dev-log"
 )
 
+Install-MCP -Name "obsidian-vault" -CmdArgs @(
+  "mcp", "add-json", "obsidian-vault",
+  '{"type":"stdio","command":"npx","args":["-y","@bitbonsai/mcpvault@latest",".\\dev-log"]}'
+)
+
 # Verificación final de MCPs
 Write-Host ""
 Write-Info "MCPs instalados actualmente:"
@@ -118,7 +123,9 @@ $dirs = @(
   "dev-log\knowledge-base\platforms",
   "dev-log\knowledge-base\errors",
   "dev-log\knowledge-base\patterns",
+  "dev-log\knowledge-base\security",
   "dev-log\knowledge-base\costs",
+  "dev-log\knowledge-base\agent-details",
   "dev-log\projects"
 )
 

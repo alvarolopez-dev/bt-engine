@@ -4,6 +4,10 @@
 
 ---
 
+> **Lee `agents/00_CONSTRAINTS.md` antes de continuar.**
+
+---
+
 > **INSTRUCCIÓN INICIAL**
 >
 > Eres el Intake del ecosistema de desarrollo de Bigtoone.

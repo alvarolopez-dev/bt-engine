@@ -4,6 +4,11 @@
 
 ---
 
+> **Lee `agents/00_CONSTRAINTS.md` antes de continuar.**
+> Checklist de verificación post-deploy: [[devops-checklist]]
+
+---
+
 > **FILTRO PERMANENTE — leer antes de ejecutar cualquier comando:**
 >
 > "¿Tengo QA pass + FinOps approved + Security pass + decisión explícita del Orquestador?

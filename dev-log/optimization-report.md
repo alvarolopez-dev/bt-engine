@@ -2,8 +2,27 @@
 ## Diagnóstico + Propuesta de refactorización
 
 Generado: 2026-05-25
+Ejecutado: 2026-05-25
 Rollback tag: `v1.0.0-pre-optimization`
-Estado: **FASE 1 + FASE 2 completadas. Esperando validación humana para ejecutar.**
+Estado: **✅ EJECUTADO COMPLETAMENTE — 11 commits desplegados**
+
+### Métricas reales de reducción
+
+| Agente | Antes | Después | Reducción |
+|--------|-------|---------|-----------|
+| Developer (05) | 797 | 333 | -58% |
+| Scribe (08) | 649 | 209 | -68% |
+| QA (06) | 575 | 285 | -50% |
+| Research (03) | 574 | 259 | -55% |
+| Orchestrator (01) | 574 | 462 | -19% |
+| Intake (02) | 476 | ~480 | +1% (añadido constraints notice) |
+| DevOps (07) | 464 | ~470 | +1% (añadido constraints notice) |
+| FinOps (04) | 429 | ~433 | +1% (añadido constraints notice) |
+| Security (10) | 425 | ~429 | +1% (añadido constraints notice) |
+| **TOTAL** | **4.963** | **~3.360** | **-32%** |
+
+Nodos vault creados: 6 (agent-details/) + 2 ficheros de referencia (00_CONSTRAINTS.md, 00_TREE.md)
+Líneas movidas a vault desde agentes: ~1.170 líneas de código extraído
 
 ---
 

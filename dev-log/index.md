@@ -100,9 +100,24 @@ Gestionada por el agente Scribe. Actualizada tras cada proyecto.
 
 ---
 
+## Agent Details — templates y schemas
+
+Nodos extraídos de agentes pesados durante refactorización 2026-05-25.
+
+| Nodo | Extraído de | Contenido |
+|------|-------------|-----------|
+| [[scribe-templates]] | Scribe §3+§5 | Templates de los 6 triggers + sintaxis Obsidian |
+| [[qa-test-cases]] | QA §3-6 | Mocks, suite obligatoria, gotchas E1-E6, caos |
+| [[api-profile-template]] | Research §5 | Schema JSON completo API_PROFILE |
+| [[plan-template]] | Orchestrator §5+§9 | project_state.json + plan.json completos |
+| [[developer-style]] | Developer §10 | Naming, idioma, comentarios, Zod |
+| [[devops-checklist]] | DevOps §5+§6 | Comandos verificación post-deploy + rollback |
+
+---
+
 ## Estadísticas de la red
 
-- **Total nodos:** 30
+- **Total nodos:** 36
 - **Plataformas:** 11
 - **Patrones:** 4
 - **Errores resueltos:** 6 (+ 1 breaking change)
@@ -110,6 +125,7 @@ Gestionada por el agente Scribe. Actualizada tras cada proyecto.
 - **Históricos de coste:** 1
 - **Proyectos:** 1
 - **Nodos AWS:** 5 (+ P11-P14 y breaking change nodejs20 en lambda-patterns)
+- **Agent details:** 6 (nuevo — refactorización 2026-05-25)
 - **Índice:** 1
 
 ### Nodos con más enlaces entrantes
