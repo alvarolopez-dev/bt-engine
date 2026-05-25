@@ -201,6 +201,40 @@ Un payload real vale más que cualquier documentación.
 Si el usuario lo tiene, Research no necesita inferir el shape de la API.
 Eso elimina errores de integración antes de que existan.
 
+### Bloque de verificación — Prerequisitos bloqueantes por plataforma
+
+Ejecutar inmediatamente después de identificar las plataformas en Bloque 1.
+Antes de continuar con datos, trigger o volumen.
+
+**Si `platform_a` o `platform_b` es Revo XEF:**
+
+```
+PREGUNTA OBLIGATORIA — Nivel 1 (no es opcional):
+  "¿Tienes el client-token de Revo?
+   Sin él la integración no puede empezar."
+
+→ SÍ, lo tiene → documentar en assets_provided.credentials_available = true
+                  añadir nota: "client-token Revo disponible — confirmar antes de DevOps"
+→ NO lo tiene   → BLOQUEANTE. Documentar en unknowns_for_research: false
+                  Añadir en constraints:
+                    "client-token Revo pendiente — solicitar a Revo antes de continuar"
+                  Informar al humano:
+                    "Necesitas solicitar el client-token a Revo antes de que
+                     el equipo técnico pueda empezar. Es un proceso manual que
+                     puede tardar días. ¿Lo tienes o lo estás gestionando?"
+→ No sabe qué es → Explicar sin tecnicismos:
+                    "Revo requiere un token especial para integradores externos.
+                     No se genera automáticamente — hay que pedírselo a Revo.
+                     ¿Alguien de tu equipo lo ha solicitado ya?"
+```
+
+Este prerequisito es **Nivel 1** — igual de bloqueante que no tener `platform_a`.
+Sin client-token, Research puede investigar y Developer puede diseñar,
+pero DevOps no puede desplegar una integración funcional.
+Detectarlo en Intake elimina el riesgo de descubrirlo en DevOps.
+
+---
+
 ### Bloque 7 — Contexto adicional (opcional)
 
 Solo preguntar si los bloques anteriores dejaron dudas o si el usuario

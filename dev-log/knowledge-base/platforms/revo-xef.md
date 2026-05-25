@@ -200,6 +200,14 @@ Integración relevante: Revo XEF → [[holded]] (pedidos cerrados → facturas).
 
   "gotchas": [
     {
+      "issue": "G-CRITICO: client-token no se auto-genera",
+      "impact": "Sin client-token la integración es imposible. No hay workaround.",
+      "fix": "Solicitar explícitamente a Revo antes de arrancar cualquier trabajo técnico.",
+      "responsable": "INTAKE — pregunta obligatoria Nivel 1: '¿Tienes el client-token de Revo? Sin él la integración no puede empezar.'",
+      "tiempo_obtencion": "No documentado por Revo. Puede bloquear días.",
+      "source": "[oficial]"
+    },
+    {
       "issue": "Tres headers obligatorios — tenant + Authorization + client-token",
       "impact": "Falta cualquiera → fallo sin mensaje claro. Diferente a APIs que solo usan Authorization.",
       "source": "[oficial]"
