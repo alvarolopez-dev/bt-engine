@@ -1,7 +1,25 @@
 {
   "permissions": {
     "allow": [
-      "Bash(chmod +x \"/Users/alvarolopez/CEROONE/PROYECTOS/AGENTE BIGTOONE/setup.sh\")"
+      "Bash(chmod +x \"/Users/alvarolopez/CEROONE/PROYECTOS/AGENTE BIGTOONE/setup.sh\")",
+      "Bash(claude mcp *)",
+      "Bash(npx -y @modelcontextprotocol/server-fetch --help)",
+      "Bash(npm search *)",
+      "Bash(npm view *)",
+      "Bash(npx -y @modelcontextprotocol/server-everything --help)",
+      "WebFetch(domain:developers.holded.com)",
+      "WebFetch(domain:www.holded.com)",
+      "Bash(git init *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "WebFetch(domain:api.revo.works)",
+      "Bash(git commit *)",
+      "Bash(find \"/Users/alvarolopez/CEROONE/PROYECTOS\" -name \"PROJECT_DNA*\" 2>/dev/null | head -20 && find \"/Users/alvarolopez/CEROONE\" -name \"PROJECT_DNA*\" 2>/dev/null | head -20)",
+      "Bash(git tag *)",
+      "Bash(git push *)",
+      "WebFetch(domain:www.serverless.com)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)"
     ]
   }
 }
