@@ -590,6 +590,161 @@ Ver [[holded-auth-change-bearer]] para precedente de breaking change documentado
 
 ---
 
+## P15 — Tipos oficiales Lambda con @types/aws-lambda
+
+```typescript
+// Instalación (dev dependency — no llega al bundle)
+// npm install -D @types/aws-lambda
+
+import { SQSEvent, SQSRecord, SQSBatchResponse, SQSBatchItemFailure,
+         APIGatewayProxyEventV2, APIGatewayProxyResultV2,
+         Context } from 'aws-lambda';
+
+// Handler SQS tipado completo
+export const handler = async (event: SQSEvent, _context: Context): Promise<SQSBatchResponse> => {
+  const batchItemFailures: SQSBatchItemFailure[] = [];
+
+  for (const record of event.Records) {
+    try {
+      // record.body: string — parsear con JSON.parse o zod
+      const payload = PedidoSchema.parse(JSON.parse(record.body));
+      await procesarPedido(payload);
+    } catch (error: unknown) {
+      const msg = error instanceof Error ? error.message : String(error);
+      log.error({ messageId: record.messageId, error: msg }, 'Error procesando mensaje SQS');
+      batchItemFailures.push({ itemIdentifier: record.messageId });
+    }
+  }
+
+  return { batchItemFailures };  // Lambda solo reintenta los mensajes fallidos
+};
+```
+
+**Tipos más usados en bt-engine:**
+- `SQSEvent` / `SQSBatchResponse` / `SQSBatchItemFailure` — SQS triggers
+- `APIGatewayProxyEventV2` / `APIGatewayProxyResultV2` — Function URL (v2 = HTTP API)
+- `Context` — siempre como segundo arg aunque no se use (prefijo `_context`)
+
+**Nota:** `import ... from 'aws-lambda'` importa tipos, NO el paquete npm `aws-lambda` (tercero, distinto).
+
+---
+
+## P16 — EMF metrics asíncronos (sin llamadas CloudWatch)
+
+```typescript
+// ── INCORRECTO: llamada API síncrona — latencia + coste por llamada ──────────
+await cloudwatch.putMetricData({
+  Namespace: 'bt-engine',
+  MetricData: [{ MetricName: 'PedidosProcesados', Value: procesados }],
+});
+
+// ── CORRECTO: EMF vía logs — async, 0 latencia extra, CloudWatch lo ingesta ──
+import { createMetricsLogger, Unit } from 'aws-embedded-metrics';
+
+// Fuera del handler (warm: reutiliza instancia)
+export const handler = async (event: SQSEvent): Promise<SQSBatchResponse> => {
+  const metrics = createMetricsLogger();
+  metrics.setNamespace('bt-engine');
+
+  // ... lógica ...
+
+  metrics.putMetric('PedidosProcesados', resultados.procesados, Unit.Count);
+  metrics.putMetric('ErroresProcesamiento', resultados.errores.length, Unit.Count);
+  await metrics.flush();  // Emite vía stdout — pino-lambda lo captura automáticamente
+
+  return { batchItemFailures };
+};
+```
+
+**Por qué EMF:** AWS official best practice (Mayo 2026).
+Emitir métricas por logs = 0 llamadas API adicionales, 0 latencia extra.
+CloudWatch Logs Insights las detecta automáticamente por el formato JSON del payload.
+`npm install aws-embedded-metrics`
+
+---
+
+## P17 — SQS partial batch response (obligatorio)
+
+Sin este patrón, cualquier error en un mensaje del batch → todos los mensajes del batch se reintentan.
+
+```typescript
+// serverless.yml — REQUERIDO para activar partial batch
+functions:
+  procesarPedidos:
+    handler: src/handlers/procesar_pedidos.main
+    timeout: 30
+    events:
+      - sqs:
+          arn: !GetAtt PedidosQueue.Arn
+          batchSize: 10
+          functionResponseType: ReportBatchItemFailures  # ← Sin esto, partial batch no funciona
+```
+
+```typescript
+// handler — siempre retornar SQSBatchResponse, nunca void ni throw
+export const handler = async (event: SQSEvent): Promise<SQSBatchResponse> => {
+  const batchItemFailures: SQSBatchItemFailure[] = [];
+
+  for (const record of event.Records) {
+    try {
+      await procesarMensaje(JSON.parse(record.body));
+    } catch (error: unknown) {
+      const msg = error instanceof Error ? error.message : String(error);
+      log.error({ messageId: record.messageId, error: msg }, 'Error en mensaje SQS');
+      batchItemFailures.push({ itemIdentifier: record.messageId });
+      // NO re-throw — continúa el batch
+    }
+  }
+
+  return { batchItemFailures };
+  // Si batchItemFailures vacío → Lambda borra todos del queue
+  // Si tiene items → Lambda reintenta solo esos, borra los demás
+};
+```
+
+**Idempotencia sigue siendo obligatoria** — SQS procesa "at least once" incluso con partial batch.
+
+---
+
+## P18 — SQS: visibility timeout y batch window
+
+### Constraint crítico: visibility timeout
+
+```
+visibilityTimeout DEBE SER >= 3 × Lambda timeout
+
+Si visibilityTimeout <= Lambda timeout:
+  → Mensaje vuelve visible ANTES de que Lambda termine
+  → Otra invocación Lambda lo lee
+  → Duplicado garantizado (incluso con idempotencia = sobrecarga innecesaria)
+
+Regla: timeout Lambda = 30s → visibilityTimeout mínimo = 90s (3×30)
+```
+
+```yaml
+resources:
+  Resources:
+    PedidosQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        VisibilityTimeout: 90       # 3 × Lambda timeout (30s)
+        MessageRetentionPeriod: 86400  # 1 día
+```
+
+### Gotcha: batch window con tráfico bajo
+
+```
+Si configuras batchWindow para acumular mensajes antes de invocar Lambda:
+  → En tráfico bajo, Lambda puede esperar hasta 20s AUNQUE el batchWindow sea menor
+  → Ej: batchWindow=5 con 1 mensaje/hora → Lambda espera 20s (no 5s)
+  → Causa: SQS polling interno de Lambda con back-off automático
+
+Implicación: NO usar batchWindow si necesitas latencia < 20s en tráfico bajo.
+Alternativa: batchSize=1, sin batchWindow (cada mensaje = una invocación).
+```
+
+---
+
 ## Anti-patrones documentados
 
 | Anti-patrón | Problema | Corrección |
@@ -604,6 +759,10 @@ Ver [[holded-auth-change-bearer]] para precedente de breaking change documentado
 | `forEach` con callbacks async | forEach no awaita — items se procesan en paralelo sin control | `for...of` o `await Promise.all()` |
 | Env vars > 4 KB total | Lambda rechaza el deploy — P12 | Mover valores largos a Secrets Manager |
 | `nodejs20.x` en serverless.yml | Block function create June 1, 2026 | Migrar a `nodejs22.x` |
+| `visibilityTimeout <= Lambda timeout` | Mensajes duplicados garantizados — P18 | `visibilityTimeout >= 3 × Lambda timeout` |
+| SQS sin `functionResponseType: ReportBatchItemFailures` | Error en 1 mensaje reintenta batch completo | Añadir en serverless.yml — P17 |
+| CloudWatch API calls para métricas | Latencia extra + coste por llamada | EMF vía logs — P16 |
+| CORS en Function URL + CORS en handler response | Headers duplicados → `Access-Control-Allow-Origin` tiene múltiples valores → error browser | Configurar CORS solo en Function URL, no en el handler |
 
 ---
 
