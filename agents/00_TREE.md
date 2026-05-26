@@ -65,6 +65,7 @@ API_PROFILE    finops_report      security_report
 | `agents/08_agent_scribe.md` | Scribe | ~649 | Documentación → vault |
 | `agents/09_HOW_TO_USE.md` | — | ref | Guía de uso del ecosistema |
 | `agents/10_agent_security.md` | Security | ~425 | Auditoría de seguridad |
+| `agents/11_agent_cdk_migration.md` | CDK Migration | ~350 | Migración SF v3 → CDK desde cero |
 
 ---
 
