@@ -11,17 +11,14 @@
             "id": "d0c24e7b32c007e2",
             "type": "leaf",
             "state": {
-              "type": "canvas",
+              "type": "markdown",
               "state": {
-                "file": "Sin título.canvas",
-                "viewState": {
-                  "x": 0,
-                  "y": 0,
-                  "zoom": 0
-                }
+                "file": "index.md",
+                "mode": "source",
+                "source": false
               },
-              "icon": "lucide-layout-dashboard",
-              "title": "Sin título"
+              "icon": "lucide-file",
+              "title": "index"
             }
           }
         ]
@@ -97,7 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Sin título.canvas",
+                "file": "knowledge-base/errors/e1-object-object-nombres.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -107,7 +104,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Enlaces entrantes de Sin título"
+              "title": "Enlaces entrantes de e1-object-object-nombres"
             }
           },
           {
@@ -116,12 +113,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Sin título.canvas",
+                "file": "knowledge-base/errors/e1-object-object-nombres.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Enlaces salientes de Sin título"
+              "title": "Enlaces salientes de e1-object-object-nombres"
             }
           },
           {
@@ -159,13 +156,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Sin título.canvas",
+                "file": "knowledge-base/errors/e1-object-object-nombres.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Esquema de Sin título"
+              "title": "Esquema de e1-object-object-nombres"
             }
           }
         ]
@@ -183,26 +180,42 @@
       "daily-notes:Abrir la nota de hoy": false,
       "templates:Insertar plantilla": false,
       "command-palette:Abrir paleta de comandos": false,
-      "bases:Crear nueva base": false
+      "bases:Crear nueva base": false,
+      "realclaudian:Open Claudian": false
     }
   },
   "active": "d0c24e7b32c007e2",
   "lastOpenFiles": [
-    "index.md",
-    "projects/prestashop-holded-middleware-prod.md",
-    "knowledge-base/platforms/holded.md",
-    "knowledge-base/platforms/prestashop.md",
-    "knowledge-base/patterns/patron-3-tiers.md",
-    "knowledge-base/patterns/handler-structure.md",
-    "knowledge-base/patterns/idempotencia-dynamodb.md",
-    "knowledge-base/errors/e6-panel-router-sin-url.md",
-    "knowledge-base/errors/e5-campo-estado-renombrado.md",
-    "knowledge-base/errors/e4-caracteres-invisibles.md",
-    "knowledge-base/errors/e3-order-rows-tres-formatos.md",
-    "knowledge-base/errors/e2-race-condition-facturas-duplicadas.md",
+    "knowledge-base/agent-details/devops-checklist.md",
+    "knowledge-base/agent-details/developer-style.md",
+    "knowledge-base/agent-details/plan-template.md",
+    "knowledge-base/agent-details/api-profile-template.md",
+    "knowledge-base/agent-details/qa-test-cases.md",
+    "knowledge-base/agent-details/scribe-templates.md",
+    "knowledge-base/agent-details",
+    "optimization-report.md",
+    "knowledge-base/security/webhook-validation.md",
+    "knowledge-base/security/gdpr-bigtoone.md",
+    "knowledge-base/security/checklist-pre-deploy.md",
+    "knowledge-base/security/incidents",
+    "knowledge-base/security",
+    "knowledge-base/platforms/revo-xef.md",
     "knowledge-base/errors/e1-object-object-nombres.md",
+    "knowledge-base/aws/step-functions-express.md",
+    "knowledge-base/aws/dynamodb-patterns.md",
+    "knowledge-base/aws/serverless-framework-v3.md",
+    "knowledge-base/aws/lambda-patterns.md",
+    "knowledge-base/aws/architecture-decision-tree.md",
+    "knowledge-base/aws",
+    "knowledge-base/platforms/business-central.md",
+    "knowledge-base/platforms/zoho-crm.md",
+    "knowledge-base/platforms/shopify.md",
+    "knowledge-base/platforms/stripe.md",
+    "knowledge-base/platforms/revo-solo.md",
+    "knowledge-base/platforms/revo-retail.md",
+    "knowledge-base/platforms/woocommerce.md",
+    "knowledge-base/platforms/revo-flow.md",
     "Sin título.canvas",
-    "knowledge-base/patterns/degradacion-silenciosa.md",
-    "knowledge-base/costs/prestashop-holded-prod.md"
+    "knowledge-base/errors/holded-auth-change-bearer.md"
   ]
 }
