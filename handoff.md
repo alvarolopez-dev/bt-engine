@@ -68,6 +68,21 @@ Handler anatomy fija (R-CODE-2): A=cargarSecretos → B=guard defensivo → C=l�
 
 ---
 
+## BLOQUE 1 — Skills propias de Bigtoone — COMPLETADO (2026-05-26)
+
+Skills de proyecto en `.claude/skills/` (no globales):
+
+| Skill | Fichero | References | Commits |
+|-------|---------|------------|---------|
+| `/caveman` | caveman/SKILL.md | toon-format.md | 8b9055e |
+| `/new-integration` | new-integration/SKILL.md | — | f490234 |
+| `/diagnose` | diagnose/SKILL.md | — | c1a8dc2 |
+| `/research` | research/SKILL.md | — | 7e48cea |
+| `/security-audit` | security-audit/SKILL.md | owasp-2025.md | 29d0609 |
+| `/cost-check` | cost-check/SKILL.md | — | 04ad541 |
+
+---
+
 ## BLOQUES PENDIENTES
 
 ### BLOQUE 2 — AWS documentación oficial
