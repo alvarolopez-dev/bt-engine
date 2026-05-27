@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "index.md",
+                "file": "knowledge-base/errors/holded-auth-change-bearer.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "index"
+              "title": "holded-auth-change-bearer"
             }
           }
         ]
@@ -186,6 +186,10 @@
   },
   "active": "d0c24e7b32c007e2",
   "lastOpenFiles": [
+    "knowledge-base/aws/serverless-framework-v3.md",
+    "knowledge-base/aws/dynamodb-patterns.md",
+    "01_agent_orchestrator.md",
+    "index.md",
     "knowledge-base/agent-details/devops-checklist.md",
     "knowledge-base/agent-details/developer-style.md",
     "knowledge-base/agent-details/plan-template.md",
@@ -202,8 +206,6 @@
     "knowledge-base/platforms/revo-xef.md",
     "knowledge-base/errors/e1-object-object-nombres.md",
     "knowledge-base/aws/step-functions-express.md",
-    "knowledge-base/aws/dynamodb-patterns.md",
-    "knowledge-base/aws/serverless-framework-v3.md",
     "knowledge-base/aws/lambda-patterns.md",
     "knowledge-base/aws/architecture-decision-tree.md",
     "knowledge-base/aws",
@@ -214,8 +216,6 @@
     "knowledge-base/platforms/revo-solo.md",
     "knowledge-base/platforms/revo-retail.md",
     "knowledge-base/platforms/woocommerce.md",
-    "knowledge-base/platforms/revo-flow.md",
-    "Sin título.canvas",
-    "knowledge-base/errors/holded-auth-change-bearer.md"
+    "Sin título.canvas"
   ]
 }
