@@ -76,7 +76,6 @@ Gestionada por el agente Scribe. Actualizada tras cada proyecto.
 | Cambio | Plataforma | Detectado | Impacto |
 |--------|-----------|-----------|---------|
 | [[holded-auth-change-bearer]] | [[holded]] | 2026-05-20 | Alto — proyectos v1 en riesgo de deprecación |
-| [[nodejs20-deprecation]] | AWS Lambda + SF v3 | 2026-05-25 | **ALTO** — nodejs20.x deprecado. Block CREATE Jun 1, 2026. `nodejs22.x` requiere SF v4 (comercial) — SF v3 lo rechaza en validación. Decisión migración pendiente (ADR-2b). |
 
 ---
 
@@ -96,7 +95,7 @@ Gestionada por el agente Scribe. Actualizada tras cada proyecto.
 | [[dynamodb-patterns]] | PAY_PER_REQUEST, ConditionalCheck, snake_case ES, antipatrón E5 | High — 5 tablas producción |
 | [[step-functions-express]] | Express vs Standard, ADR-2 fetch+process separados, EventBridge cron | High — producción |
 
-**Stack AWS validado:** Serverless Framework v3.38.0 · Node.js 20.x · TypeScript · eu-west-2
+**Stack AWS validado:** Serverless Framework v3.38.0 / AWS CDK · Node.js 22.x · TypeScript · eu-west-2
 
 ---
 
@@ -124,7 +123,7 @@ Nodos extraídos de agentes pesados durante refactorización 2026-05-25.
 - **Breaking changes:** 1
 - **Históricos de coste:** 1
 - **Proyectos:** 1
-- **Nodos AWS:** 5 (+ P11-P14 y breaking change nodejs20 en lambda-patterns)
+- **Nodos AWS:** 5 (+ P11-P18)
 - **Agent details:** 6 (nuevo — refactorización 2026-05-25)
 - **Índice:** 1
 

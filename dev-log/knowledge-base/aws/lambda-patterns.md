@@ -547,47 +547,6 @@ export const main = async (event: any) => {
 
 ---
 
-## ⚠️ Breaking change — nodejs20.x deprecado (URGENTE)
-
-```
-Runtime actual en producción: nodejs20.x (prestashop-holded-middleware-prod)
-
-Fechas oficiales AWS:
-  Deprecación:        April 30, 2026   ← YA PASÓ (hoy: 2026-05-21)
-  Block function create: June 1, 2026  ← EN 10 DÍAS
-  Block function update: July 1, 2026  ← EN 40 DÍAS
-
-Runtimes soportados (Mayo 2026):
-  nodejs22.x — deprecación: April 30, 2027
-  nodejs24.x — deprecación: April 30, 2028
-```
-
-**Impacto:** `sls deploy` crea/actualiza funciones Lambda. A partir del June 1, 2026, los deploys fallarán si el runtime es `nodejs20.x`.
-
-**Fix — serverless.yml:**
-
-```yaml
-provider:
-  runtime: nodejs22.x    # Era: nodejs20.x — CAMBIAR ANTES DEL 1 JUNIO 2026
-```
-
-**Fix — tsconfig.json:**
-
-```json
-{
-  "compilerOptions": {
-    "target": "es2022"   // nodejs22 soporta ES2022 — era es2020
-  }
-}
-```
-
-**Verificar compatibilidad antes de deploy:**
-- `nodejs22` usa `npm 10` (nodejs20 usaba `npm 9`) — posibles conflictos en lock files
-- V8 engine update puede cambiar comportamiento de edge cases numéricos
-- Probar en `stage: dev` antes de `stage: prod`
-
-Ver [[holded-auth-change-bearer]] para precedente de breaking change documentado en esta vault.
-
 ---
 
 ## P15 — Tipos oficiales Lambda con @types/aws-lambda
@@ -758,7 +717,6 @@ Alternativa: batchSize=1, sin batchWindow (cada mensaje = una invocación).
 | Llamada API dentro de loop sin caché | N llamadas para N ítems | Caché 2 niveles |
 | `forEach` con callbacks async | forEach no awaita — items se procesan en paralelo sin control | `for...of` o `await Promise.all()` |
 | Env vars > 4 KB total | Lambda rechaza el deploy — P12 | Mover valores largos a Secrets Manager |
-| `nodejs20.x` en serverless.yml | Block function create June 1, 2026 | Migrar a `nodejs22.x` |
 | `visibilityTimeout <= Lambda timeout` | Mensajes duplicados garantizados — P18 | `visibilityTimeout >= 3 × Lambda timeout` |
 | SQS sin `functionResponseType: ReportBatchItemFailures` | Error en 1 mensaje reintenta batch completo | Añadir en serverless.yml — P17 |
 | CloudWatch API calls para métricas | Latencia extra + coste por llamada | EMF vía logs — P16 |

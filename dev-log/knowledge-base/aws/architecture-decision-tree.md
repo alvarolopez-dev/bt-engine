@@ -88,7 +88,7 @@ service: revo-holded-middleware
 
 provider:
   name: aws
-  runtime: nodejs20.x
+  runtime: nodejs22.x
   region: eu-west-2
   memorySize: 1024
   environment:
@@ -183,7 +183,7 @@ service: revo-solo-holded-middleware
 
 provider:
   name: aws
-  runtime: nodejs20.x
+  runtime: nodejs22.x
   region: eu-west-2
   memorySize: 1024
   iam:

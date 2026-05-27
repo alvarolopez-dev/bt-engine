@@ -153,12 +153,6 @@ Ver [[webhook-validation]] para código exacto por plataforma.
 | Zoho CRM | Token verificación | Query param `token` |
 | Business Central | OAuth / API key | `Authorization` header |
 
-### Constraint de runtime — nodejs20.x + SF v3
-
-nodejs20.x deprecado. SF v3 no soporta nodejs22.x (enum hardcoded en `provider.js`).
-Ver [[serverless-framework-v3]] CONSTRAINT CRÍTICO.
-Documentar como warning en auditorías de proyectos con este stack hasta resolución de ADR-2b.
-
 ---
 
 ## 5. PROTOCOLO DE AUDITORÍA — 7 CAPAS

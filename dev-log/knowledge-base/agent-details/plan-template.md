@@ -95,8 +95,8 @@ sabe exactamente qué construir sin hacer una sola pregunta.
         "purpose": "",
         "estimated_duration_ms": 0,
         "memory_mb": 128,
-        "runtime": "nodejs20.x",
-        "runtime_note": "SF v3 max — ver constraint ADR-2b en serverless-framework-v3.md"
+        "runtime": "nodejs22.x",
+        "runtime_note": ""
       }
     ],
     "database": "DynamoDB PAY_PER_REQUEST | ninguna",

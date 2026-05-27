@@ -21,23 +21,12 @@ applies-to: todos los agentes del ecosistema
 |---|---|---|
 | Compute | AWS Lambda | EC2, ECS, contenedores |
 | Trigger público | Lambda Function URL (`AuthType: NONE`) | API Gateway |
-| IaC | Serverless Framework v3 | CDK, SAM, Terraform (salvo ADR explícita) |
-| Runtime | `nodejs20.x` | `nodejs22.x` — ver constraint crítico abajo |
+| IaC | Serverless Framework v3 / AWS CDK | SAM, Terraform (salvo ADR explícita) |
+| Runtime | `nodejs22.x` | `nodejs20.x` (deprecado por AWS) |
 | Lenguaje | TypeScript con `strict: true` | JavaScript puro, `any` sin guard |
 | Secrets | AWS Secrets Manager (prod) / `.env` (local) | Hardcoded en código o serverless.yml |
 | Base de datos | DynamoDB | RDS, Aurora, Mongo (salvo ADR explícita) |
 | Logs | `pino` con `pino-lambda` | `console.log` directo |
-
-### ⚠️ CONSTRAINT CRÍTICO — Runtime nodejs
-
-```
-nodejs20.x → max soportado por SF v3
-nodejs22.x → requiere SF v4.4.12+ (suscripción comercial)
-             SF v3 lo rechaza en validación antes de deploy
-
-Decisión migración: ADR-2b PENDIENTE
-No cambiar runtime sin ADR-2b aprobada por el Orquestador
-```
 
 ### SaaS de referencia
 

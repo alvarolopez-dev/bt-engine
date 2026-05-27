@@ -308,7 +308,7 @@ Contenido propuesto (este fichero lo lee cada agente al inicio):
 Aplican a todos los agentes sin excepción.
 
 ## Stack fijo
-- Runtime: nodejs20.x (SF v3 max — ver ADR-2b)
+- Runtime: nodejs22.x
 - Framework: Serverless Framework v3.38.0 (congelado)
 - Región AWS: eu-west-1, eu-west-2, o eu-west-3 (GDPR)
 - DB: DynamoDB PAY_PER_REQUEST (nunca PROVISIONED)
