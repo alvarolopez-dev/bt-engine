@@ -1,0 +1,30 @@
+# Datos de proyecto (generados en runtime por los agentes del pipeline)
+project_state.json
+intake_briefing.json
+finops_report.json
+qa_report.json
+security_report.json
+developer_report.json
+cdk_migration_report.json
+
+# Secretos
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Vault (ficheros de sesión temporal)
+dev-log/projects/*/current_session.md
+
+# Build
+node_modules/
+dist/
+.serverless/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test
+.revo-holded-test/
