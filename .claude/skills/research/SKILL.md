@@ -1,32 +1,29 @@
 ---
 name: research
-description: "Investiga una plataforma o API nueva y añade su perfil completo a la vault de conocimiento. Úsalo cuando el usuario mencione una plataforma no documentada, pida investigar una API, necesite el perfil de autenticación de un servicio, o diga investiga X, documenta X, o añade X a la vault."
+description: "Investiga una plataforma o API nueva y añade su perfil a la vault. DISPARAR cuando: usuario mencione plataforma no documentada, pida investigar una API, diga investiga X, documenta X, añade X a la vault, necesito el perfil de X, qué endpoints tiene X. Activar también si el usuario empieza a describir una integración y la plataforma no está en dev-log/knowledge-base/platforms/."
 user-invocable: true
 args: "$ARGUMENTS = nombre de plataforma"
 ---
 
 # Research — Investigación de Plataformas
 
-Actívate con `/research [plataforma]`, "investiga X", "documenta X", "añade X a la vault", o cuando el usuario mencione una plataforma no documentada.
-
-## PASO 1 — Verificar vault primero
+## PASO 1 — Vault primero
 
 ```
-search_notes con nombre de plataforma
+search_notes("[nombre plataforma]")
 ```
 
-Si existe y está actualizado:
-→ Reportar qué hay y preguntar explícitamente si actualizar.
-Si existe pero desactualizado:
-→ Identificar qué secciones necesitan actualización.
-Si no existe:
-→ Continuar con PASO 2.
+| Resultado | Acción |
+|-----------|--------|
+| Perfil completo existe | Reportar qué hay, preguntar si actualizar |
+| Perfil parcial | Identificar secciones faltantes, completar solo esas |
+| No existe | Continuar con PASO 2 |
 
 ## PASO 2 — Pedir URL oficial
 
 Pedir al usuario la URL de la API reference oficial.
-**No buscar sin URL confirmada.**
-El perfil marcado como `[inferido]` sin URL oficial es válido pero se marca explícitamente.
+No buscar sin URL confirmada.
+Perfil sin URL oficial: marcar cada dato como `[inferido]`.
 
 ## PASO 3 — Cargar agente Research
 
@@ -35,14 +32,14 @@ Ejecutar protocolo completo de investigación.
 
 ## PASO 4 — Construir API_PROFILE completo
 
-Ver `[[api-profile-template]]` en vault (`dev-log/knowledge-base/agent-details/api-profile-template.md`).
+Ver `[[api-profile-template]]` en `dev-log/knowledge-base/agent-details/api-profile-template.md`.
 
-Marcar cada dato con su fuente:
-- `[oficial]` — de la documentación oficial
-- `[comunidad]` — de foros, GitHub issues, Stack Overflow
+Marcar fuente de cada dato:
+- `[oficial]` — documentación oficial
+- `[comunidad]` — foros, GitHub issues, Stack Overflow
 - `[inferido]` — deducido del comportamiento
 
-Campos mínimos del perfil:
+Campos mínimos requeridos:
 - Autenticación (tipo, headers, tokens, renovación)
 - Rate limits (por endpoint si difieren)
 - Webhook signature (si aplica)
@@ -52,25 +49,25 @@ Campos mínimos del perfil:
 ## PASO 5 — Escribir en vault
 
 ```
-write_note en dev-log/knowledge-base/platforms/{nombre}.md
+write_note → dev-log/knowledge-base/platforms/{nombre}.md
 ```
 
-Frontmatter YAML requerido:
+Frontmatter requerido:
 ```yaml
 ---
 tags: [platform, {nombre}, api-profile]
 created: {fecha}
-status: draft|reviewed
+status: draft
 ---
 ```
 
 ## PASO 6 — Actualizar índice
 
 ```
-patch_note en dev-log/index.md
+patch_note → dev-log/index.md
 ```
 
-Añadir entrada en la sección `platforms/`.
+Añadir entrada en sección `platforms/`.
 
 ## PASO 7 — Commit
 
@@ -78,7 +75,7 @@ Añadir entrada en la sección `platforms/`.
 knowledge: {plataforma} — perfil inicial
 ```
 
-Si es actualización:
+Si actualización:
 ```
 knowledge: {plataforma} — actualizar {sección}
 ```

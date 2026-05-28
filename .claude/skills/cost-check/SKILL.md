@@ -1,67 +1,66 @@
 ---
 name: cost-check
-description: "Estimación rápida de coste AWS sin pipeline completo. Úsalo cuando el usuario pregunte cuánto costaría una arquitectura, quiera comparar opciones de coste, pida una estimación antes de empezar desarrollo, o diga cuánto cuesta, precio estimado, coste AWS, o similar."
+description: "Estimación rápida de coste AWS. DISPARAR cuando: usuario pregunte cuánto cuesta, precio estimado, coste AWS, comparar opciones; también antes de arrancar cualquier proyecto nuevo si el usuario no ha pedido FinOps — si hay intake_briefing.json sin finops_report.json, ofrecer proactivamente. Nunca estimar sin datos de volumen — preguntar primero."
 user-invocable: true
 args: "$ARGUMENTS = descripción de la arquitectura"
 ---
 
 # Cost Check — Estimación Rápida AWS
 
-Actívate con `/cost-check [arquitectura]`, "cuánto cuesta", "precio estimado", "coste AWS", "comparar opciones", o cuando el usuario pregunte por costes antes de empezar.
-
 ## PASO 1 — Referencia base en vault
 
 ```
-search_notes "cost_history"
+search_notes("cost_history prestashop holded")
 ```
 
-Referencia base confirmada en producción:
-**$0.82/mes para 50 pedidos/día** (prestashop-holded middleware)
-Ver `dev-log/knowledge-base/costs/prestashop-holded-prod.md` para desglose completo.
+Base confirmada en producción: **$0.82/mes para 50 pedidos/día**
+Ver `dev-log/knowledge-base/costs/prestashop-holded-prod.md`.
 
-## PASO 2 — Cargar FinOps
+## PASO 2 — Datos mínimos antes de calcular
 
-Cargar `agents/04_agent_finops.md`.
+Si faltan → preguntar antes de estimar. Nunca asumir volumen.
 
-Si faltan datos para calcular → preguntar antes de estimar. Los datos mínimos requeridos:
-- Volumen de eventos/pedidos por día
+- Eventos/pedidos por día
 - Número de integraciones (fuentes × destinos)
-- Frecuencia de polling si aplica
-- Región de deploy
+- Polling o webhook-driven
+- Región de deploy (default: eu-west-2)
+- Picos previsibles (campañas, estacionalidad)
 
-**Nunca asumir volumen. Siempre preguntar.**
+## PASO 3 — Cargar FinOps
 
-## PASO 3 — Output en formato TOON
+Cargar `agents/04_agent_finops.md` para análisis completo.
+
+## PASO 4 — Output TOON
 
 ```
-[N]{servicio|coste_usd|unidad|notas}:
-Lambda,0.003,/mes,cubierto free tier hasta 1M req
-SQS,0.001,/mes,<1M requests/mes
-Secrets,0.80,/mes,2 secretos × $0.40
-CloudWatch,0.02,/mes,~50MB logs
+[N]{servicio,coste_usd,unidad,tier,notas}:
+Lambda,0.003,/mes,free-tier,<1M invocations
+DynamoDB,0.012,/mes,pay-per-request,~10k writes
+SQS,0.001,/mes,free-tier,<1M requests
+SecretsManager,0.80,/mes,fixed,2 secretos × $0.40
+CloudWatch,0.02,/mes,standard,~50MB logs
 ```
 
-Luego:
+Luego siempre incluir:
 ```
-Total estimado: $X.XX/mes (~€X.XX al cambio actual)
-Free tier cubre: sí hasta mes N / no (explicar por qué)
-```
-
-Si hay señales de alerta (coste inesperadamente alto, volumen que sale del free tier, picos no contemplados):
-```
-⚠️ Alertas:
-- [descripción de la señal]
+Total: $X.XX/mes (~€X.XX)
+Free tier: cubre hasta mes N / no cubre porque [razón]
 ```
 
-## Precios de referencia (mayo 2026)
+Alertas si detecta señal de coste inesperado:
+```
+⚠️ [descripción: volumen sale de free tier en mes N, pico estacional no contemplado, etc.]
+```
+
+## Precios referencia (mayo 2026)
 
 | Servicio | Precio |
 |----------|--------|
-| Lambda | $0.20 / 1M requests + $0.0000166667 / GB-segundo |
-| DynamoDB PAY_PER_REQUEST | $1.25 / 1M writes, $0.25 / 1M reads |
-| Secrets Manager | $0.40 / secreto / mes |
-| SQS Standard | $0.40 / 1M requests |
-| CloudWatch Logs | $0.50 / GB ingestado |
-| Lambda Function URL | Sin coste adicional (solo Lambda) |
+| Lambda | $0.20/1M req + $0.0000166667/GB-s |
+| DynamoDB | $1.25/1M writes · $0.25/1M reads |
+| Secrets Manager | $0.40/secreto/mes |
+| SQS Standard | $0.40/1M requests |
+| CloudWatch Logs | $0.50/GB ingestado |
+| Lambda Function URL | Sin coste adicional |
 
-Free tier Lambda: 1M requests/mes + 400K GB-segundos/mes (permanente).
+Free tier Lambda (permanente): 1M req/mes + 400K GB-s/mes.

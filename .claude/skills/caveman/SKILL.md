@@ -1,45 +1,59 @@
 ---
 name: caveman
-description: "Activa modo ultra-comprimido para ahorrar tokens. Úsalo cuando el contexto supere el 70%, en sprints de commits repetitivos, o cuando el usuario diga caveman, comprime, modo ahorro o similar. Actívalo también proactivamente cuando el usuario ejecute tareas mecánicas repetitivas (múltiples commits, renombrados en lote, refactors repetitivos) donde la verbosidad no aporta valor."
+description: "Activa modo ultra-comprimido para ahorrar tokens. DISPARAR cuando: usuario diga /caveman, comprime, modo ahorro, ahorra tokens; contexto supere 70%; tareas mecánicas repetitivas (commits en lote, renombrados, grep masivos, refactors mecánicos); sprints sin decisiones de arquitectura. Desactivar SOLO con 'stop caveman' o 'normal mode'. Nivel default: full."
 user-invocable: true
 ---
 
 # Caveman — Modo Comprimido bt-engine
 
-Actívate cuando el usuario diga `/caveman`, `comprime`, `modo ahorro`, o cuando el contexto supere el 70%.
+## Triggers
 
-## COMUNICACIÓN COMPRIMIDA
+Activar:
+- `/caveman` · `comprime` · `modo ahorro` · `ahorra tokens`
+- Contexto > 70%
+- Tareas mecánicas repetitivas sin decisiones de arquitectura
 
-- Respuestas telegráficas — sin introducciones
-- Sin explicar lo que vas a hacer antes de hacerlo
-- Reportes como tablas de una línea, nunca párrafos
-- Commits en una línea máximo
-- Sin confirmaciones de lo que ya es obvio
+Desactivar: `stop caveman` / `normal mode`
 
-## LECTURA INTELIGENTE DE FICHEROS
+## Niveles de intensidad
 
-Usa el modo mínimo según el tipo de fichero:
+| Nivel | Comportamiento |
+|-------|---------------|
+| `lite` | Drop artículos/filler, fragmentos OK, sinónimos cortos |
+| `full` (default) | Lite + tablas TOON + sin confirmaciones obvias |
+| `ultra` | Full + sin texto antes de tool calls + diff al final |
 
-| Tipo | Acción |
-|------|--------|
-| Agente que vas a editar | Leer completo |
-| Agente de contexto | Solo leer §relevante |
-| Nodo vault que no vas a editar | `search_notes` |
-| Fichero que ya leíste | No releer |
+Cambiar: `/caveman lite` · `/caveman full` · `/caveman ultra`
 
-## REFERENCIAS EN LUGAR DE CONTENIDO
+## Reglas de comunicación
 
-Si algo requiere más de 3 líneas → enlace a vault.
-`"Ver [[nombre-nodo]]"` en lugar de reproducir.
+- Sin introducciones ni narración interna
+- Reportes → tablas TOON (ver references/toon-format.md), no párrafos
+- Commits en una línea
+- Sin confirmar lo obvio
+- Patrón: `[cosa] [acción] [razón]. [siguiente paso].`
+
+## Lectura inteligente
+
+| Tipo fichero | Acción |
+|---|---|
+| Agente a editar | Leer completo |
+| Agente de contexto | Solo §relevante |
+| Nodo vault sin editar | `search_notes` antes de leer |
+| Fichero ya leído en sesión | No releer |
+| JSON de gate (briefing/report) | Solo campos clave |
+
+## Referencias en lugar de contenido
+
+Si respuesta requiere >3 líneas de contexto → `Ver [[nombre-nodo]]`.
 Nunca copiar contenido de vault en respuesta.
 
-## DATOS ESTRUCTURADOS EN TOON
+## Auto-claridad (NO comprimir)
 
-Ver `references/toon-format.md` para el formato.
-Usar TOON para arrays de objetos en reportes.
+Mantener prosa normal en:
+- Advertencias de seguridad
+- Confirmaciones de operaciones destructivas o irreversibles
+- Secuencias donde orden importa y fragmentos crean ambigüedad
+- Cuando usuario pide aclaración o repite pregunta
 
-Leer `references/toon-format.md` cuando necesites formatear tablas de datos estructurados.
-
-## Desactivar
-
-`/caveman off` → modo normal
+Reanudar caveman tras completar el bloque crítico.
