@@ -1,10 +1,10 @@
 # HANDOFF — bt-engine / Bigtoone Agent Stack
-<!-- Actualizado: 2026-05-26. Para recuperar contexto tras clear o pérdida de sesión. -->
+<!-- Actualizado: 2026-05-28. Para recuperar contexto tras clear o pérdida de sesión. -->
 
 ## Estado actual — rama main, sin cambios pendientes
 
 ```
-último commit: 8a38f95  feat(skills): tokenwise instalado — routing Haiku/Sonnet/Opus + autocompact 80%
+último commit: 3ce10a8  feat(skills): 7 skills Bigtoone construidas — descriptions pushier + constraints nueva
 ```
 
 ---
@@ -25,8 +25,8 @@ Objetivo: instalar skills reutilizables para el ecosistema bt-engine.
 | `skill-creator` | anthropics/skills | Crear/mejorar/evaluar skills desde cero |
 | `security-audit/references/owasp-2025.md` | agamm/claude-code-owasp | Solo references — checklists OWASP Top10/LLM/Agentic |
 | `caveman/references/toon-format.md` | Construido ad-hoc | TOON lite con ejemplos bt-engine |
-| `typescript-strict` | Construido desde cero | TypeScript strict:true para Lambda nodejs20.x |
-| `serverless-deploy` | Construido desde cero | SF v3, nodejs20.x, Lambda Function URL, DynamoDB |
+| `typescript-strict` | Construido desde cero | TypeScript strict:true para Lambda nodejs22.x |
+| `serverless-deploy` | Construido desde cero | SF v3, nodejs22.x, Lambda Function URL, DynamoDB |
 
 ### Ficheros globales modificados
 
@@ -39,7 +39,36 @@ Objetivo: instalar skills reutilizables para el ecosistema bt-engine.
 
 **settings.json NO tiene** `CLAUDE_CODE_DISABLE_1M_CONTEXT` — decisión explícita del usuario (demasiado agresivo globalmente).
 
-### Ficheros del proyecto en este commit
+---
+
+## BLOQUE 1b — COMPLETADO (2026-05-26/28)
+
+Objetivo: 7 skills propias de Bigtoone en `.claude/skills/` del proyecto.
+
+### Skills de proyecto en `.claude/skills/`
+
+| Skill | Fichero | References | user-invocable | Commit |
+|-------|---------|------------|----------------|--------|
+| `/caveman` | caveman/SKILL.md | toon-format.md | true | 3ce10a8 |
+| `/new-integration` | new-integration/SKILL.md | — | true | 3ce10a8 |
+| `/diagnose` | diagnose/SKILL.md | — | true | 3ce10a8 |
+| `/research` | research/SKILL.md | — | true | 3ce10a8 |
+| `/security-audit` | security-audit/SKILL.md | owasp-2025.md | true | 3ce10a8 |
+| `/cost-check` | cost-check/SKILL.md | — | true | 3ce10a8 |
+| `constraints` | constraints/SKILL.md | — | false (silenciosa) | 3ce10a8 |
+
+### Mejoras clave vs stubs previos
+
+- Todas las descriptions usan patrón DISPARAR — triggers explícitos, proactivos
+- `caveman`: niveles lite/full/ultra documentados; sección auto-claridad
+- `toon-format.md`: ejemplos intake_briefing + api_profile + finops_report con campos reales del pipeline
+- `new-integration`: TOON status por gate; Research ∥ FinOps paralelo explícito
+- `diagnose`: cortocircuito E1-E6, límite 3 ficheros, paths vault explícitos
+- `security-audit`: 7 capas en tabla; trigger proactivo pre-DevOps sin security_report
+- `cost-check`: trigger proactivo si intake sin finops; datos mínimos antes de calcular
+- `constraints`: skill silenciosa nueva — stack, R-CODE, R-SEC, pipeline, MCP vault
+
+### Otros ficheros del proyecto
 
 ```
 .agents/skills/bash-defensive-patterns/SKILL.md   — skill project-level
@@ -54,7 +83,7 @@ skills-lock.json                                   — hash verificación bash-d
 
 | Componente | Valor fijo | Prohibido |
 |---|---|---|
-| Runtime | `nodejs20.x` | `nodejs22.x` (requiere SF v4.4.12+) |
+| Runtime | `nodejs22.x` | `nodejs20.x` (deprecado por AWS) |
 | Trigger | Lambda Function URL (`url: true`) | API Gateway |
 | IaC | Serverless Framework v3 | CDK, SAM, Terraform |
 | Lenguaje | TypeScript `strict: true` | JavaScript puro, `any` sin guard |
@@ -65,21 +94,6 @@ skills-lock.json                                   — hash verificación bash-d
 Pipeline: `INTAKE → (RESEARCH ∥ FINOPS) → DEVELOPER → (QA ∥ FINOPS ∥ SECURITY) → ORCHESTRATOR → DEVOPS`
 
 Handler anatomy fija (R-CODE-2): A=cargarSecretos → B=guard defensivo → C=lógica → D=retorno tipado
-
----
-
-## BLOQUE 1 — Skills propias de Bigtoone — COMPLETADO (2026-05-26)
-
-Skills de proyecto en `.claude/skills/` (no globales):
-
-| Skill | Fichero | References | Commits |
-|-------|---------|------------|---------|
-| `/caveman` | caveman/SKILL.md | toon-format.md | 8b9055e |
-| `/new-integration` | new-integration/SKILL.md | — | f490234 |
-| `/diagnose` | diagnose/SKILL.md | — | c1a8dc2 |
-| `/research` | research/SKILL.md | — | 7e48cea |
-| `/security-audit` | security-audit/SKILL.md | owasp-2025.md | 29d0609 |
-| `/cost-check` | cost-check/SKILL.md | — | 04ad541 |
 
 ---
 
@@ -109,10 +123,11 @@ Luego decir: `"Listo para BLOQUE 2 — AWS docs"` o `"Listo para BLOQUE 3 — Ty
 ## Gotchas documentados
 
 1. **client_token Revo obligatorio en Intake** — campo requerido, no opcional. Ver commit `fa300f6`.
-2. **nodejs22.x bloqueado** — SF v3 lo rechaza antes de deploy. Nunca cambiar sin ADR-2b.
+2. **nodejs22.x** — runtime actual. El handoff anterior decía nodejs20.x por error; 00_CONSTRAINTS.md es fuente de verdad.
 3. **catch siempre `error: unknown`** — nunca `error: any`. Ver R-CODE-5 en 00_CONSTRAINTS.md.
 4. **Singletons a nivel de módulo** — DynamoDB, SecretsManager, pino fuera del handler. Ver R-CODE-3.
 5. **Idempotencia obligatoria** — ConditionalCheck DynamoDB antes de procesar cualquier webhook. Ver R-CODE-7.
 6. **TOON solo para Claude→Claude** — nunca para payloads a APIs externas (Revo/Holded/Zoho).
 7. **`agamm/claude-code-owasp`** — el SKILL.md está en `.claude/skills/owasp-security/SKILL.md`, no en raíz.
 8. **settings.json sin `CLAUDE_CODE_DISABLE_1M_CONTEXT`** — decisión deliberada, no un olvido.
+9. **constraints/SKILL.md es silenciosa** — `user-invocable: false`, se carga automáticamente, no con `/constraints`.
