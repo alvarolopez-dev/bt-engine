@@ -41,6 +41,16 @@ function Check-Command {
 }
 
 Check-Command "node"   "Node.js"     "https://nodejs.org"
+
+# Verificar versión mínima de Node.js — el ecosistema requiere 20+
+if (Get-Command node -ErrorAction SilentlyContinue) {
+  $nodeMajor = [int]((node --version 2>&1) -replace 'v','' -split '\.')[0]
+  if ($nodeMajor -lt 20) {
+    Write-Err "Node.js 20+ requerido. Tienes $(node --version). Descarga desde: https://nodejs.org"
+    $script:errors++
+  }
+}
+
 Check-Command "npm"    "npm"         "https://nodejs.org"
 Check-Command "git"    "Git"         "https://git-scm.com"
 Check-Command "claude" "Claude Code" "https://claude.ai/code"
@@ -59,11 +69,11 @@ $inRepo = (Test-Path "09_HOW_TO_USE.md") -or
           (Test-Path "README.md")
 
 if (-not $inRepo) {
-  Write-Warn "No parece que estés dentro del repositorio bigtoone-agents."
+  Write-Warn "No parece que estés dentro del repositorio bt-engine."
   Write-Host ""
   Write-Host "  Clona el repositorio primero:" -ForegroundColor White
-  Write-Host "  git clone https://github.com/bigtoone/bigtoone-agents.git" -ForegroundColor Cyan
-  Write-Host "  cd bigtoone-agents" -ForegroundColor Cyan
+  Write-Host "  git clone https://github.com/alvarolopez-dev/bt-engine.git" -ForegroundColor Cyan
+  Write-Host "  cd bt-engine" -ForegroundColor Cyan
   Write-Host "  .\setup.ps1" -ForegroundColor Cyan
   exit 1
 }
@@ -149,8 +159,11 @@ Write-Host "  1. Abre " -NoNewline; Write-Host "Obsidian" -ForegroundColor White
 Write-Host " → Open Vault → selecciona la carpeta " -NoNewline; Write-Host "dev-log\" -ForegroundColor Cyan
 Write-Host "  2. Abre " -NoNewline; Write-Host "Claude Code" -ForegroundColor White -NoNewline
 Write-Host " → Open Folder → esta carpeta"
-Write-Host "  3. Lee " -NoNewline; Write-Host "agents\09_HOW_TO_USE.md" -ForegroundColor Cyan -NoNewline
-Write-Host " para empezar"
+Write-Host "  3. Lee " -NoNewline; Write-Host "agents\MANUAL.md" -ForegroundColor Cyan -NoNewline
+Write-Host " para la guía completa"
+Write-Host "  4. En Obsidian: " -NoNewline; Write-Host "Settings -> Community Plugins -> Browse" -ForegroundColor White -NoNewline
+Write-Host " -> buscar " -NoNewline; Write-Host "'Claude Code MCP'" -ForegroundColor Cyan -NoNewline
+Write-Host " -> Install -> Enable"
 Write-Host ""
 Write-Host "Tip: Para verificar los MCPs instalados: " -NoNewline -ForegroundColor Yellow
 Write-Host "claude mcp list" -ForegroundColor Cyan

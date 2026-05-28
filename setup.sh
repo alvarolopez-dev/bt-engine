@@ -45,6 +45,16 @@ check_cmd() {
 }
 
 check_cmd "node"   "Node.js"     "https://nodejs.org"
+
+# Verificar versión mínima de Node.js — el ecosistema requiere 20+
+if command -v node &>/dev/null; then
+  NODE_MAJOR=$(node --version 2>&1 | sed 's/v//' | cut -d. -f1)
+  if [ "${NODE_MAJOR:-0}" -lt 20 ]; then
+    err "Node.js 20+ requerido. Tienes $(node --version). Descarga desde: https://nodejs.org"
+    ERRORS=$((ERRORS + 1))
+  fi
+fi
+
 check_cmd "npm"    "npm"         "https://nodejs.org"
 check_cmd "git"    "Git"         "https://git-scm.com"
 check_cmd "claude" "Claude Code" "https://claude.ai/code"
@@ -60,11 +70,11 @@ step "PASO 2 — Verificando ubicación del repositorio"
 
 # Detectar si estamos dentro del repo comprobando ficheros clave
 if [ ! -f "09_HOW_TO_USE.md" ] && [ ! -f "agents/09_HOW_TO_USE.md" ] && [ ! -f "README.md" ]; then
-  warn "No parece que estés dentro del repositorio bigtoone-agents."
+  warn "No parece que estés dentro del repositorio bt-engine."
   echo ""
   echo -e "  Clona el repositorio primero:"
-  echo -e "  ${CYAN}git clone https://github.com/bigtoone/bigtoone-agents.git${NC}"
-  echo -e "  ${CYAN}cd bigtoone-agents${NC}"
+  echo -e "  ${CYAN}git clone https://github.com/alvarolopez-dev/bt-engine.git${NC}"
+  echo -e "  ${CYAN}cd bt-engine${NC}"
   echo -e "  ${CYAN}./setup.sh${NC}"
   exit 1
 fi
@@ -122,6 +132,7 @@ DIRS=(
   "dev-log/knowledge-base/errors"
   "dev-log/knowledge-base/patterns"
   "dev-log/knowledge-base/security"
+  "dev-log/knowledge-base/aws"
   "dev-log/knowledge-base/costs"
   "dev-log/knowledge-base/agent-details"
   "dev-log/projects"
@@ -145,7 +156,8 @@ echo ""
 echo -e "${BOLD}Próximos pasos:${NC}"
 echo -e "  ${CYAN}1.${NC} Abre ${BOLD}Obsidian${NC} → Open Vault → selecciona la carpeta ${CYAN}dev-log/${NC}"
 echo -e "  ${CYAN}2.${NC} Abre ${BOLD}Claude Code${NC} → Open Folder → esta carpeta"
-echo -e "  ${CYAN}3.${NC} Lee ${CYAN}agents/09_HOW_TO_USE.md${NC} (o ${CYAN}09_HOW_TO_USE.md${NC}) para empezar"
+echo -e "  ${CYAN}3.${NC} Lee ${CYAN}agents/MANUAL.md${NC} para la guía completa"
+echo -e "  ${CYAN}4.${NC} En Obsidian: ${BOLD}Settings → Community Plugins → Browse${NC} → buscar ${CYAN}'Claude Code MCP'${NC} → Install → Enable"
 echo ""
 echo -e "${YELLOW}Tip:${NC} Para verificar los MCPs instalados: ${CYAN}claude mcp list${NC}"
 echo ""
