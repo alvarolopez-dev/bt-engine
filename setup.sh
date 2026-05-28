@@ -96,11 +96,15 @@ install_mcp() {
 # Nota: @modelcontextprotocol/server-fetch no existe en npm.
 # Claude Code incluye WebFetch nativo — no se necesita MCP de fetch externo.
 
+# Resuelve el path absoluto en runtime para evitar que el MCP quede configurado
+# con una ruta relativa que Claude Code no pueda resolver desde otro directorio
+VAULT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/dev-log"
+
 install_mcp "filesystem" \
-  claude mcp add filesystem -- npx -y @modelcontextprotocol/server-filesystem ./dev-log
+  claude mcp add filesystem -- npx -y @modelcontextprotocol/server-filesystem "${VAULT_PATH}"
 
 install_mcp "obsidian-vault" \
-  claude mcp add-json obsidian-vault '{"type":"stdio","command":"npx","args":["-y","@bitbonsai/mcpvault@latest","./dev-log"]}'
+  claude mcp add-json obsidian-vault "{\"type\":\"stdio\",\"command\":\"npx\",\"args\":[\"-y\",\"@bitbonsai/mcpvault@latest\",\"${VAULT_PATH}\"]}"
 
 # Verificación final de MCPs
 echo ""
