@@ -22,7 +22,7 @@ applies-to: todos los agentes del ecosistema
 | Compute | AWS Lambda | EC2, ECS, contenedores |
 | Trigger público | Lambda Function URL (`AuthType: NONE`) | API Gateway |
 | IaC | Serverless Framework v3 / AWS CDK | SAM, Terraform (salvo ADR explícita) |
-| Runtime | `nodejs22.x` | `nodejs20.x` (deprecado por AWS) |
+| Runtime | `nodejs20.x` | `nodejs22.x` (SF v3 no soporta — requiere SF v4 o CDK) |
 | Lenguaje | TypeScript con `strict: true` | JavaScript puro, `any` sin guard |
 | Secrets | AWS Secrets Manager (prod) / `.env` (local) | Hardcoded en código o serverless.yml |
 | Base de datos | DynamoDB | RDS, Aurora, Mongo (salvo ADR explícita) |

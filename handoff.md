@@ -25,8 +25,8 @@ Objetivo: instalar skills reutilizables para el ecosistema bt-engine.
 | `skill-creator` | anthropics/skills | Crear/mejorar/evaluar skills desde cero |
 | `security-audit/references/owasp-2025.md` | agamm/claude-code-owasp | Solo references — checklists OWASP Top10/LLM/Agentic |
 | `caveman/references/toon-format.md` | Construido ad-hoc | TOON lite con ejemplos bt-engine |
-| `typescript-strict` | Construido desde cero | TypeScript strict:true para Lambda nodejs22.x |
-| `serverless-deploy` | Construido desde cero | SF v3, nodejs22.x, Lambda Function URL, DynamoDB |
+| `typescript-strict` | Construido desde cero | TypeScript strict:true para Lambda nodejs20.x |
+| `serverless-deploy` | Construido desde cero | SF v3, nodejs20.x, Lambda Function URL, DynamoDB |
 
 ### Ficheros globales modificados
 
@@ -83,7 +83,7 @@ skills-lock.json                                   — hash verificación bash-d
 
 | Componente | Valor fijo | Prohibido |
 |---|---|---|
-| Runtime | `nodejs22.x` | `nodejs20.x` (deprecado por AWS) |
+| Runtime | `nodejs20.x` | `nodejs22.x` (SF v3 no soporta — requiere SF v4 o CDK) |
 | Trigger | Lambda Function URL (`url: true`) | API Gateway |
 | IaC | Serverless Framework v3 | CDK, SAM, Terraform |
 | Lenguaje | TypeScript `strict: true` | JavaScript puro, `any` sin guard |
@@ -123,7 +123,7 @@ Luego decir: `"Listo para BLOQUE 2 — AWS docs"` o `"Listo para BLOQUE 3 — Ty
 ## Gotchas documentados
 
 1. **client_token Revo obligatorio en Intake** — campo requerido, no opcional. Ver commit `fa300f6`.
-2. **nodejs22.x** — runtime actual. El handoff anterior decía nodejs20.x por error; 00_CONSTRAINTS.md es fuente de verdad.
+2. **nodejs20.x es el runtime correcto con SF v3** — nodejs22.x no está soportado por Serverless Framework v3 en validación local. Si se necesita nodejs22.x, requiere migrar a SF v4 o CDK. La sesión de 2026-05-26 invirtió esto por error.
 3. **catch siempre `error: unknown`** — nunca `error: any`. Ver R-CODE-5 en 00_CONSTRAINTS.md.
 4. **Singletons a nivel de módulo** — DynamoDB, SecretsManager, pino fuera del handler. Ver R-CODE-3.
 5. **Idempotencia obligatoria** — ConditionalCheck DynamoDB antes de procesar cualquier webhook. Ver R-CODE-7.

@@ -127,7 +127,7 @@ dev-log/
 ## Stack fijo (resumen rápido)
 
 ```
-Compute:    AWS Lambda (nodejs22.x)
+Compute:    AWS Lambda (nodejs20.x)
 IaC:        Serverless Framework v3.38.0
 DB:         DynamoDB PAY_PER_REQUEST
 Región:     eu-west-2 (producción actual)
