@@ -147,3 +147,7 @@ Todo el conocimiento generado por los agentes va a `dev-log/`. Todo el código g
 ---
 
 *Bigtoone · [bigto.one](https://bigto.one)*
+
+---
+
+*Diseñado y desarrollado por Álvaro López — Bigtoone 2026*

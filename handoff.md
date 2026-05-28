@@ -1,3 +1,6 @@
+> Autor: Álvaro López
+> Proyecto iniciado: mayo 2026
+
 # HANDOFF — bt-engine / Bigtoone Agent Stack
 <!-- Actualizado: 2026-05-28. Para recuperar contexto tras clear o pérdida de sesión. -->
 

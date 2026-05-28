@@ -4,6 +4,9 @@ created: 2026-05-25
 applies-to: todos los agentes del ecosistema
 ---
 
+# Bigtoone Agent Ecosystem — Constraints
+> Diseñado por Álvaro López · 2026
+
 # 00 — CONSTRAINTS UNIVERSALES
 
 > **INSTRUCCIÓN OBLIGATORIA**

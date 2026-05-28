@@ -6,6 +6,8 @@ applies-to: todos los agentes del ecosistema
 
 # 00 — MAPA DEL ECOSISTEMA BIGTOONE
 
+> Autor: Álvaro López · Bigtoone 2026
+
 > Leer este fichero para orientarse en el proyecto.
 > Siempre leer `[[00_CONSTRAINTS]]` antes de cualquier tarea.
 
