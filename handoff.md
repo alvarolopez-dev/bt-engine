@@ -2,12 +2,13 @@
 > Proyecto iniciado: mayo 2026
 
 # HANDOFF — bt-engine / Bigtoone Agent Stack
-<!-- Actualizado: 2026-05-28. Para recuperar contexto tras clear o pérdida de sesión. -->
+<!-- Actualizado: 2026-05-29. Para recuperar contexto tras clear o pérdida de sesión. -->
 
 ## Estado actual — rama main, sin cambios pendientes
 
 ```
-último commit: 3ce10a8  feat(skills): 7 skills Bigtoone construidas — descriptions pushier + constraints nueva
+último commit: 6945848  fix: setup.sh + setup.ps1 — URL repo, Node 20+, plugin Obsidian, MANUAL.md, aws/ folder, warn corregido
+tag: v1.3.1
 ```
 
 ---
@@ -60,17 +61,6 @@ Objetivo: 7 skills propias de Bigtoone en `.claude/skills/` del proyecto.
 | `/cost-check` | cost-check/SKILL.md | — | true | 3ce10a8 |
 | `constraints` | constraints/SKILL.md | — | false (silenciosa) | 3ce10a8 |
 
-### Mejoras clave vs stubs previos
-
-- Todas las descriptions usan patrón DISPARAR — triggers explícitos, proactivos
-- `caveman`: niveles lite/full/ultra documentados; sección auto-claridad
-- `toon-format.md`: ejemplos intake_briefing + api_profile + finops_report con campos reales del pipeline
-- `new-integration`: TOON status por gate; Research ∥ FinOps paralelo explícito
-- `diagnose`: cortocircuito E1-E6, límite 3 ficheros, paths vault explícitos
-- `security-audit`: 7 capas en tabla; trigger proactivo pre-DevOps sin security_report
-- `cost-check`: trigger proactivo si intake sin finops; datos mínimos antes de calcular
-- `constraints`: skill silenciosa nueva — stack, R-CODE, R-SEC, pipeline, MCP vault
-
 ### Otros ficheros del proyecto
 
 ```
@@ -78,6 +68,51 @@ Objetivo: 7 skills propias de Bigtoone en `.claude/skills/` del proyecto.
 .claude/skills/bash-defensive-patterns             — symlink → .agents/skills/...
 .claude/settings.local.json                        — permisos ampliados (WebFetch, git, npm, mcp)
 skills-lock.json                                   — hash verificación bash-defensive-patterns
+```
+
+---
+
+## SESIÓN 2026-05-28/29 — COMPLETADA
+
+Objetivo: auditoría completa + fixes + Lambda A test + documentación final.
+
+### Lambda A — revo-holded-test (NUEVO)
+
+Directorio: `/Users/alvarolopez/CEROONE/PROYECTOS/revo-holded-test/`
+
+| Fichero | Contenido |
+|---------|-----------|
+| `src/handlers/webhook_receiver.ts` | Lambda A — x-www-form-urlencoded, HMAC SHA256, SQS enqueue |
+| `src/types/revo_webhook.ts` | Tipos TypeScript: RevoOrderClosedPayload, SqsOrderMessage, HandlerResponse |
+| `package.json` | pino, pino-lambda@^4.4.1, qs, @aws-sdk/client-sqs |
+| `tsconfig.json` | strict:true, target ES2020 |
+| `serverless.yml` | SF v3, nodejs20.x, Function URL, SQS trigger Lambda B |
+| `.env.example` | REVO_WEBHOOK_SECRET, SQS_QUEUE_URL |
+| `dev-log/knowledge-base/errors/nodejs-runtime-sf-v3.md` | Error node: nodejs20.x vs nodejs22.x |
+
+Patrón clave Lambda A:
+- Raw `Buffer` antes de `qs.parse()` — integridad HMAC garantizada
+- `crypto.timingSafeEqual` para comparar firmas
+- Respuesta 200 < 1s → SQS enqueue async (límite hard Revo: 5s × 5 timeouts = webhook desactivado)
+
+### Auditoría + fixes (commits 62ce6d9 → 6945848)
+
+| Commit | Fix |
+|--------|-----|
+| `1bfc73d` | obsidian-vault MCP path — ruta absoluta dinámica en setup.sh |
+| `62ce6d9` | .gitignore — proteger JSONs runtime + secretos |
+| `db85fdc` | vault cleanup — agente duplicado + canvas sin nombre |
+| `a6252e0` | eliminar legacy `Agentes Bigtone/` (typo, Obsidian default) |
+| `63c5459` | nodejs20.x correcto en todo el ecosistema |
+| `dbf47dc` | autoría Álvaro López en 6 ficheros + AUTHORS.md |
+| `6945848` | setup.sh + setup.ps1 — 5+4 fixes (URL, Node 20+, MANUAL.md, aws/, Obsidian plugin) |
+
+### Documentación nueva/reescrita
+
+```
+agents/MANUAL.md        — guía completa de uso (11 plataformas, 9 agentes, FAQ)
+README.md               — 1 página entry point (reescrito desde cero)
+AUTHORS.md              — autoría: Álvaro López, stack, período
 ```
 
 ---
@@ -126,7 +161,7 @@ Luego decir: `"Listo para BLOQUE 2 — AWS docs"` o `"Listo para BLOQUE 3 — Ty
 ## Gotchas documentados
 
 1. **client_token Revo obligatorio en Intake** — campo requerido, no opcional. Ver commit `fa300f6`.
-2. **nodejs20.x es el runtime correcto con SF v3** — nodejs22.x no está soportado por Serverless Framework v3 en validación local. Si se necesita nodejs22.x, requiere migrar a SF v4 o CDK. La sesión de 2026-05-26 invirtió esto por error.
+2. **nodejs20.x es el runtime correcto con SF v3** — nodejs22.x no está soportado por Serverless Framework v3 en validación local. Si se necesita nodejs22.x, requiere migrar a SF v4 o CDK. La sesión de 2026-05-26 invirtió esto por error. Ver vault: `dev-log/knowledge-base/errors/nodejs-runtime-sf-v3.md`.
 3. **catch siempre `error: unknown`** — nunca `error: any`. Ver R-CODE-5 en 00_CONSTRAINTS.md.
 4. **Singletons a nivel de módulo** — DynamoDB, SecretsManager, pino fuera del handler. Ver R-CODE-3.
 5. **Idempotencia obligatoria** — ConditionalCheck DynamoDB antes de procesar cualquier webhook. Ver R-CODE-7.
@@ -134,3 +169,7 @@ Luego decir: `"Listo para BLOQUE 2 — AWS docs"` o `"Listo para BLOQUE 3 — Ty
 7. **`agamm/claude-code-owasp`** — el SKILL.md está en `.claude/skills/owasp-security/SKILL.md`, no en raíz.
 8. **settings.json sin `CLAUDE_CODE_DISABLE_1M_CONTEXT`** — decisión deliberada, no un olvido.
 9. **constraints/SKILL.md es silenciosa** — `user-invocable: false`, se carga automáticamente, no con `/constraints`.
+10. **obsidian-vault MCP config en `~/.claude.json`** — almacenado por proyecto, NO en el repo. Requiere reinicio de sesión de Claude Code tras cambiar el path. setup.sh calcula ruta absoluta en runtime con `$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/dev-log` para evitar placeholder roto.
+11. **pino-lambda@^5.0.0 no existe** — versión 5.x no publicada en npm. Usar siempre `^4.4.1`.
+12. **Lambda A Revo: responder < 1s** — Revo desactiva el webhook tras 5 timeouts de 5s. Patrón correcto: 200 inmediato + SQS enqueue; Lambda B procesa async.
+13. **optimization-report.md en dev-log/ raíz** — fichero intencional (no figura en 00_TREE.md — es meta-doc del ecosistema, no knowledge-base).
