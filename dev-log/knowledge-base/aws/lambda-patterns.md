@@ -35,10 +35,10 @@ export const main = async (event: Input, _context: Context): Promise<Output> => 
     try {
       await procesarItem(item);
       resultados.procesados++;
-    } catch (error: any) {
-      // Error de ítem: aísla, continúa el batch
-      resultados.errores.push(`Item ${item.id}: ${error.message}`);
-      log.error({ itemId: item.id, error: error.message }, 'Error procesando ítem');
+    } catch (error: unknown) {
+      const msg = error instanceof Error ? error.message : String(error);
+      resultados.errores.push(`Item ${item.id}: ${msg}`);
+      log.error({ itemId: item.id, error: msg }, 'Error procesando ítem');
     }
   }
 
@@ -100,9 +100,10 @@ for (const pedido of pedidos) {
   try {
     await procesarPedido(pedido);
     procesados++;
-  } catch (error: any) {
-    errores.push(`Pedido ${pedido.id}: ${error.message}`);
-    log.error({ pedidoId: pedido.id }, 'Error procesando pedido');
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : String(error);
+    errores.push(`Pedido ${pedido.id}: ${msg}`);
+    log.error({ pedidoId: pedido.id, error: msg }, 'Error procesando pedido');
     // No re-throw — el batch continúa
   }
 }
@@ -111,8 +112,9 @@ for (const pedido of pedidos) {
 // Cuándo: feature opcional falla → el flujo principal no debe interrumpirse
 try {
   await holdedService.crearPago(docId, amount, treasuryId);
-} catch (pagoError: any) {
-  log.warn({ error: pagoError.message, docId }, 'Factura creada pero fallo al registrar pago');
+} catch (pagoError: unknown) {
+  const msg = pagoError instanceof Error ? pagoError.message : String(pagoError);
+  log.warn({ error: msg, docId }, 'Factura creada pero fallo al registrar pago');
   // warn, no error — el pedido se marca procesado igual
   // Ver: [[degradacion-silenciosa]]
 }
@@ -279,7 +281,7 @@ export async function registrarPedido(pedido: StandardOrder): Promise<void> {
       // ← Magia: solo escribe si NO existe. Atómico.
       ConditionExpression: 'attribute_not_exists(id_pedido_tienda)',
     }));
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error instanceof ConditionalCheckFailedException) {
       // Pedido ya procesado por otra invocación Lambda paralela
       // NO es un error — es el mecanismo de deduplicación funcionando

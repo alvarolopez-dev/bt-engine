@@ -84,7 +84,7 @@ export async function registrarPedidoNuevo(pedido: StandardOrder): Promise<'nuev
     }));
     return 'nuevo';
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error instanceof ConditionalCheckFailedException) {
       log.warn({ id: pedido.id_pedido_tienda }, 'Pedido ya registrado — duplicado ignorado');
       return 'duplicado';  // No es un error — es el mecanismo funcionando

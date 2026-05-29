@@ -77,7 +77,7 @@ dev-log/
 ├── index.md                    ← índice maestro (30 nodos documentados)
 ├── knowledge-base/
 │   ├── aws/
-│   │   ├── lambda-patterns.md         (P1-P14 validados en producción)
+│   │   ├── lambda-patterns.md         (P1-P18 validados en producción)
 │   │   ├── dynamodb-patterns.md
 │   │   ├── serverless-framework-v3.md
 │   │   ├── step-functions-express.md

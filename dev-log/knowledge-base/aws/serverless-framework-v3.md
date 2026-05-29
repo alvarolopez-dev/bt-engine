@@ -52,7 +52,7 @@ custom:
 
 provider:
   name: aws
-  runtime: nodejs22.x
+  runtime: nodejs20.x
   region: eu-west-2              # Londres — siempre para clientes españoles
   stage: ${opt:stage, 'dev'}
   memorySize: 1024               # MB — default para todas las funciones
