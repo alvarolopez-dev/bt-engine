@@ -151,10 +151,24 @@ Objetivo: vault aws/ + agent-details/ completa y sin violaciones de constraints.
 
 ---
 
+## BLOQUE 3 — COMPLETADO (2026-05-29)
+
+Objetivo: patterns avanzados TypeScript para Lambda — 3 ficheros nuevos en `dev-log/knowledge-base/patterns/`.
+
+| Fichero | Contenido |
+|---------|-----------|
+| `zod-validation.md` | Schema definition, `z.infer<>`, safeParse vs parse, passthrough, coerción form-data, error format pino, anti-patrones |
+| `middleware-lambda.md` | Compose pattern sin deps, withSecrets/withRawBody/withHmacRevo/withFormBody, orden fijo de middlewares, tests por separado |
+| `error-taxonomy.md` | `BtEngineError` base + 5 subclases (Config/Validation/ExternalApi/Duplicate/WebhookAuth), instanceof guards, pino serializer |
+
+`00_TREE.md` actualizado con los 3 nuevos nodos.
+
+---
+
 ## BLOQUES PENDIENTES
 
-### BLOQUE 3 — TypeScript avanzado para Lambda
-Objetivo: patterns avanzados — zod validation en handlers, middleware pattern, error taxonomy bt-engine
+Todos los bloques planificados completados. Vault de conocimiento completa.
+Próximas sesiones: implementación de proyectos usando el ecosistema (BLOQUE 4 libre).
 
 ---
 

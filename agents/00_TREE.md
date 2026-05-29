@@ -98,7 +98,10 @@ dev-log/
 │   │   ├── handler-structure.md
 │   │   ├── idempotencia-dynamodb.md
 │   │   ├── degradacion-silenciosa.md
-│   │   └── patron-3-tiers.md
+│   │   ├── patron-3-tiers.md
+│   │   ├── zod-validation.md          (schemas, z.infer, safeParse, coerción form-data)
+│   │   ├── middleware-lambda.md       (compose pattern para webhook handlers)
+│   │   └── error-taxonomy.md         (BtEngineError + 5 subclases, instanceof guards)
 │   ├── errors/
 │   │   ├── e1-object-object-nombres.md
 │   │   ├── e2-race-condition-facturas-duplicadas.md
