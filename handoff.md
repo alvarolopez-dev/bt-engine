@@ -135,10 +135,23 @@ Handler anatomy fija (R-CODE-2): A=cargarSecretos → B=guard defensivo → C=l�
 
 ---
 
-## BLOQUES PENDIENTES
+## BLOQUE 2 — COMPLETADO (2026-05-29)
 
-### BLOQUE 2 — AWS documentación oficial
-Objetivo: references específicas de AWS para Lambda + DynamoDB + SF v3 en dev-log/knowledge-base/aws/
+Objetivo: vault aws/ + agent-details/ completa y sin violaciones de constraints.
+
+### Fase A — fixes vault aws/ (commit 231dad0)
+- `nodejs22.x` → `nodejs20.x` en `serverless-framework-v3.md` + `architecture-decision-tree.md` (×2)
+- `error: any` → `error: unknown` + msg guard en `lambda-patterns.md` (P1, P3, P7) + `dynamodb-patterns.md` (Regla 3)
+- `00_TREE.md`: P1-P14 → P1-P18
+
+### Fase B — agent-details/ (ya existían, fixes + markers)
+- 6 ficheros en `dev-log/knowledge-base/agent-details/` — contenido real, no stubs
+- `developer-style.md` + `plan-template.md`: `nodejs22.x` → `nodejs20.x`
+- `00_TREE.md`: markers "(pendiente)" → descripciones reales
+
+---
+
+## BLOQUES PENDIENTES
 
 ### BLOQUE 3 — TypeScript avanzado para Lambda
 Objetivo: patterns avanzados — zod validation en handlers, middleware pattern, error taxonomy bt-engine

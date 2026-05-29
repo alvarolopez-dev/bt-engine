@@ -108,7 +108,7 @@ type UpdatePayload<T, Immutable extends keyof T = 'id' | 'createdAt'> =
 
 ---
 
-## tsconfig.json — configuración oficial para Lambda nodejs22.x
+## tsconfig.json — configuración oficial para Lambda nodejs20.x
 
 ```json
 {
@@ -132,7 +132,7 @@ type UpdatePayload<T, Immutable extends keyof T = 'id' | 'createdAt'> =
 **Campos clave:**
 - `"noEmit": true` — si usas esbuild para compilar, tsc solo chequea tipos (no emite JS)
 - `"isolatedModules": true` — requerido por esbuild; cada fichero transpilable sin contexto global
-- `"target": "es2022"` — nodejs22.x soporta ES2022
+- `"target": "es2022"` — nodejs20.x soporta ES2022
 - `"strict": true` — obligatorio en bt-engine (R-CODE-4)
 
 **Flujo con esbuild (futuro):**

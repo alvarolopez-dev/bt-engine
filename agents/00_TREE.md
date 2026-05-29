@@ -113,13 +113,13 @@ dev-log/
 │   │   └── gdpr-bigtoone.md
 │   ├── costs/
 │   │   └── prestashop-holded-prod.md
-│   └── agent-details/              ← propuesto en optimization-report
-│       ├── scribe-templates.md     (extraer de Scribe §3 — pendiente)
-│       ├── qa-test-cases.md        (extraer de QA §3-6 — pendiente)
-│       ├── api-profile-template.md (extraer de Research §5 — pendiente)
-│       ├── plan-template.md        (extraer de Orchestrator §5+§9 — pendiente)
-│       ├── developer-style.md      (extraer de Developer §10 — pendiente)
-│       └── devops-checklist.md     (extraer de DevOps §5 — pendiente)
+│   └── agent-details/              ← extraído de agentes para reducir peso
+│       ├── scribe-templates.md     (Scribe §3 — 6 triggers completos)
+│       ├── qa-test-cases.md        (QA §3-6 — suite completa + gotchas)
+│       ├── api-profile-template.md (Research §5 — esquema api_profile)
+│       ├── plan-template.md        (Orchestrator §5+§9 — plan.json template)
+│       ├── developer-style.md      (Developer §10 — estilo + tsconfig)
+│       └── devops-checklist.md     (DevOps §5 — checklist por componente)
 └── projects/
     └── prestashop-holded-middleware-prod.md
 ```
